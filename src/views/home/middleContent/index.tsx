@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import EChart from "../../../components/EChart"
 import type { EChartsOption } from "echarts"
 import MCPDiagram from "./mcp-diagram"
@@ -6,12 +6,25 @@ import MCPCommunication from "./mcp-communication"
 import MCPArchitecture from "./mcp-architecture"
 import MCPProtocolDiagram from "./mcp-protocol-diagram"
 import TechBackground from "../../../components/TechBackground"
+import Modal from "../../../components/Modal"
+import DataCollectionModal from "../components/modals/DataCollectionModal"
+import DataProcessingModal from "../components/modals/DataProcessingModal"
+import DataDisplayModal from "../components/modals/DataDisplayModal"
+import DataAnalysisModal from "../components/modals/DataAnalysisModal"
+import useModal from "../../../hooks/useModal"
 import { analysisApi } from "@/api/index"
+
 /**
  * 中间内容组件
  * 展示中央数据流动和数据处理节点
  */
 const MiddleContent: React.FC = () => {
+  // 使用自定义hook管理各个模块的弹窗状态
+  const collectionModal = useModal()
+  const processingModal = useModal()
+  const displayModal = useModal()
+  const analysisModal = useModal()
+
   // 中央数据流动图配置
   const dataFlowOption: EChartsOption = {
     backgroundColor: "transparent",
@@ -188,7 +201,10 @@ const MiddleContent: React.FC = () => {
       <div className="absolute inset-0 z-[5] grid grid-cols-2 grid-rows-2 gap-6 p-8">
         {/* 左上 */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full h-full max-w-[500px] max-h-[280px]">
+          <div
+            className="w-full h-full max-w-[500px] max-h-[280px] cursor-pointer"
+            onClick={collectionModal.handleOpen}
+          >
             <MCPDiagram
               title="数据采集"
               themeColor="#00ffff"
@@ -199,7 +215,10 @@ const MiddleContent: React.FC = () => {
 
         {/* 右上 */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full h-full max-w-[500px] max-h-[280px]">
+          <div
+            className="w-full h-full max-w-[500px] max-h-[280px] cursor-pointer"
+            onClick={processingModal.handleOpen}
+          >
             <MCPCommunication
               title="数据处理"
               themeColor="#00ff7f"
@@ -210,7 +229,10 @@ const MiddleContent: React.FC = () => {
 
         {/* 左下 */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full h-full max-w-[500px] max-h-[280px]">
+          <div
+            className="w-full h-full max-w-[500px] max-h-[280px] cursor-pointer"
+            onClick={displayModal.handleOpen}
+          >
             <MCPProtocolDiagram
               title="数据展示"
               themeColor="#ffaa00"
@@ -221,7 +243,10 @@ const MiddleContent: React.FC = () => {
 
         {/* 右下 */}
         <div className="relative flex items-center justify-center">
-          <div className="w-full h-full max-w-[500px] max-h-[280px]">
+          <div
+            className="w-full h-full max-w-[500px] max-h-[280px] cursor-pointer"
+            onClick={analysisModal.handleOpen}
+          >
             <MCPArchitecture
               title="数据分析"
               themeColor="#ff6b00"
@@ -250,6 +275,47 @@ const MiddleContent: React.FC = () => {
           <div className="absolute top-[25%] left-[50%] w-[20%] h-[1px] bg-gradient-to-b from-transparent to-[#1890ff] rotate-[90deg] origin-left"></div>
         </div>
       </div>
+
+      {/* 弹窗组件 */}
+      <Modal
+        title="数据采集"
+        open={collectionModal.open}
+        onClose={collectionModal.handleClose}
+        themeColor="#00ffff"
+        secondaryColor="#0066ff"
+      >
+        <DataCollectionModal themeColor="#00ffff" secondaryColor="#0066ff" />
+      </Modal>
+
+      <Modal
+        title="数据处理"
+        open={processingModal.open}
+        onClose={processingModal.handleClose}
+        themeColor="#00ff7f"
+        secondaryColor="#008060"
+      >
+        <DataProcessingModal themeColor="#00ff7f" secondaryColor="#008060" />
+      </Modal>
+
+      <Modal
+        title="数据展示"
+        open={displayModal.open}
+        onClose={displayModal.handleClose}
+        themeColor="#ffaa00"
+        secondaryColor="#cc8800"
+      >
+        <DataDisplayModal themeColor="#ffaa00" secondaryColor="#cc8800" />
+      </Modal>
+
+      <Modal
+        title="数据分析"
+        open={analysisModal.open}
+        onClose={analysisModal.handleClose}
+        themeColor="#ff6b00"
+        secondaryColor="#b94b00"
+      >
+        <DataAnalysisModal themeColor="#ff6b00" secondaryColor="#b94b00" />
+      </Modal>
     </div>
   )
 }

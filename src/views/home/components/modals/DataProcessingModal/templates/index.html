@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>论文数据处理系统</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>论文数据处理系统</h1>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stats-box">
+                <h2>实时数据统计</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">处理速度</div>
+                        <div class="stat-value" id="process-speed">0</div>
+                        <div class="stat-unit">篇/秒</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">总论文量</div>
+                        <div class="stat-value" id="total-count">0</div>
+                        <div class="stat-unit">篇</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-box">
+                <h2>24小时处理趋势</h2>
+                <canvas id="trend-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="data-management">
+            <div class="data-tabs">
+                <button class="tab-btn active" data-tab="valid">可用论文</button>
+                <button class="tab-btn" data-tab="formula">公式图片</button>
+                <button class="tab-btn" data-tab="trash">垃圾数据</button>
+            </div>
+            
+            <div class="data-content">
+                <div class="tab-panel active" id="valid-panel">
+                    <div class="panel-header">
+                        <h2>可用论文数据</h2>
+                        <div class="panel-stats">
+                            <span class="stat-badge" id="valid-count">0 篇</span>
+                        </div>
+                    </div>
+                    <div class="data-grid" id="valid-list"></div>
+                </div>
+                
+                <div class="tab-panel" id="formula-panel">
+                    <div class="panel-header">
+                        <h2>公式图片</h2>
+                        <div class="panel-stats">
+                            <span class="stat-badge" id="formula-count">0 个</span>
+                        </div>
+                    </div>
+                    <div class="data-grid" id="formula-list"></div>
+                </div>
+                
+                <div class="tab-panel" id="trash-panel">
+                    <div class="panel-header">
+                        <h2>垃圾数据</h2>
+                        <div class="actions">
+                            <span class="stat-badge" id="trash-count">0 项</span>
+                            <button class="action-btn delete" id="clear-trash">清空垃圾箱</button>
+                        </div>
+                    </div>
+                    <div class="data-list" id="trash-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <div class="results-header">
+                <h2>实时处理结果</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="valid">可用</button>
+                    <button class="filter-btn" data-filter="formula">公式</button>
+                    <button class="filter-btn" data-filter="trash">垃圾</button>
+                </div>
+            </div>
+            <div class="results-list" id="process-results"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../static/js/main.js"></script>
+</body>
+</html> 
