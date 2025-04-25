@@ -67,7 +67,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 1,
         radius: ["38%", "72%"],
-        center: ["30%", "54%"], // 向下偏移
+        center: ["50%", "54%"],
         startAngle: 90,
         label: { show: false },
         labelLine: { show: false },
@@ -84,7 +84,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 2,
         radius: ["40%", "70%"],
-        center: ["30%", "52%"], // 稍微向下偏移
+        center: ["50%", "52%"], // 稍微向下偏移
         startAngle: 90,
         label: { show: false },
         labelLine: { show: false },
@@ -104,7 +104,7 @@ const RightContent: React.FC = () => {
         name: "访问统计",
         type: "pie",
         radius: ["40%", "70%"],
-        center: ["30%", "50%"],
+        center: ["50%", "50%"],
         startAngle: 90, // 调整起始角度
         clockwise: true,
         avoidLabelOverlap: true,
@@ -143,7 +143,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 20,
         radius: ["40%", "70%"],
-        center: ["30%", "48%"], // 向上偏移
+        center: ["50%", "48%"], // 向上偏移
         startAngle: 90,
         label: { show: false },
         labelLine: { show: false },
@@ -160,7 +160,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 5,
         radius: ["25%", "40%"],
-        center: ["30%", "50%"],
+        center: ["50%", "50%"],
         startAngle: 90,
         label: { show: false },
         labelLine: { show: false },
@@ -177,7 +177,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 6,
         radius: ["25%", "40%"],
-        center: ["30%", "48%"], // 向上偏移
+        center: ["50%", "48%"], // 向上偏移
         startAngle: 90,
         endAngle: 270,
         label: { show: false },
@@ -195,7 +195,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 6,
         radius: ["25%", "40%"],
-        center: ["30%", "52%"], // 向下偏移
+        center: ["50%", "52%"], // 向下偏移
         startAngle: 270,
         endAngle: 450,
         label: { show: false },
@@ -213,7 +213,7 @@ const RightContent: React.FC = () => {
         silent: true,
         z: 7,
         radius: ["0%", "25%"],
-        center: ["30%", "50%"],
+        center: ["50%", "50%"],
         label: { show: false },
         labelLine: { show: false },
         itemStyle: {

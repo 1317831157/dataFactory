@@ -116,9 +116,9 @@ export default function MCPArchitecture({
           />
           <text
             x="0"
-            y="50"
+            y="57"
             fontFamily="Arial"
-            fontSize="14"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -195,9 +195,9 @@ export default function MCPArchitecture({
           />
           <text
             x="0"
-            y="50"
+            y="57"
             fontFamily="Arial"
-            fontSize="14"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -220,7 +220,7 @@ export default function MCPArchitecture({
           x="400"
           y="135"
           fontFamily="Arial"
-          fontSize="14"
+          fontSize="16"
           fontWeight="bold"
           textAnchor="middle"
           fill="white"
@@ -269,9 +269,9 @@ export default function MCPArchitecture({
           />
           <text
             x="0"
-            y="50"
+            y="55"
             fontFamily="Arial"
-            fontSize="12"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -320,9 +320,9 @@ export default function MCPArchitecture({
           <circle cx="0" cy="0" r="5" fill={themeColor} />
           <text
             x="0"
-            y="50"
+            y="55"
             fontFamily="Arial"
-            fontSize="12"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -352,9 +352,9 @@ export default function MCPArchitecture({
           />
           <text
             x="0"
-            y="50"
+            y="55"
             fontFamily="Arial"
-            fontSize="12"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -405,9 +405,9 @@ export default function MCPArchitecture({
           />
           <text
             x="0"
-            y="50"
+            y="55"
             fontFamily="Arial"
-            fontSize="12"
+            fontSize="16"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"

@@ -286,7 +286,7 @@ export default function MCPDiagram({
           <circle cx="0" cy="30" r="5" fill={secondaryColor} />
           <text
             x="0"
-            y="70"
+            y="100"
             fontFamily="Arial"
             fontSize="20"
             textAnchor="middle"
@@ -410,7 +410,7 @@ export default function MCPDiagram({
         <g transform="translate(400, 600)">
           <text
             x="0"
-            y="70"
+            y="45"
             fontFamily="Arial"
             fontSize="20"
             textAnchor="middle"

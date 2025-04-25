@@ -74,7 +74,7 @@ export default function MCPProtocolDiagram({
         />
 
         {/* 第一行 - Claude */}
-        <g transform="translate(100, 150)">
+        <g transform="translate(170, 150)">
           {/* Claude 图标和文本 */}
           <text
             x="0"
@@ -104,7 +104,7 @@ export default function MCPProtocolDiagram({
           />
           <text
             x="160"
-            y="5"
+            y="0"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -114,7 +114,7 @@ export default function MCPProtocolDiagram({
           </text>
           <text
             x="160"
-            y="20"
+            y="15"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -190,7 +190,7 @@ export default function MCPProtocolDiagram({
               strokeWidth="1"
             />
             <rect
-              x="-20"
+              x="-25"
               y="-15"
               width="40"
               height="30"
@@ -199,24 +199,24 @@ export default function MCPProtocolDiagram({
               strokeWidth="1"
             />
             <rect
-              x="-15"
-              y="-10"
+              x="-10"
+              y="-11"
               width="10"
               height="5"
               fill="white"
               stroke="none"
             />
             <rect
-              x="-15"
-              y="0"
+              x="-10"
+              y="-2"
               width="10"
               height="5"
               fill="white"
               stroke="none"
             />
             <rect
-              x="-15"
-              y="10"
+              x="-10"
+              y="8"
               width="10"
               height="5"
               fill="white"
@@ -236,7 +236,7 @@ export default function MCPProtocolDiagram({
         </g>
 
         {/* 第二行 - JIT */}
-        <g transform="translate(100, 250)">
+        <g transform="translate(170, 250)">
           {/* JIT 图标和文本 */}
           <rect
             x="20"
@@ -284,7 +284,7 @@ export default function MCPProtocolDiagram({
           />
           <text
             x="160"
-            y="5"
+            y="0"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -294,7 +294,7 @@ export default function MCPProtocolDiagram({
           </text>
           <text
             x="160"
-            y="20"
+            y="15"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -418,7 +418,7 @@ export default function MCPProtocolDiagram({
         </g>
 
         {/* 第三行 - AI Think */}
-        <g transform="translate(100, 350)">
+        <g transform="translate(170, 350)">
           {/* AI Think 图标和文本 */}
           <rect
             x="20"
@@ -478,7 +478,7 @@ export default function MCPProtocolDiagram({
           />
           <text
             x="160"
-            y="5"
+            y="0"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -488,7 +488,7 @@ export default function MCPProtocolDiagram({
           </text>
           <text
             x="160"
-            y="20"
+            y="15"
             fontFamily="Arial"
             fontSize="12"
             textAnchor="middle"
@@ -553,10 +553,10 @@ export default function MCPProtocolDiagram({
           <polygon points="380,0 375,-5 375,5" fill={themeColor} />
 
           {/* Web APIs 和图标 */}
-          <g transform="translate(420, 0)">
+          <g transform="translate(440, 15)">
             <text
               x="0"
-              y="5"
+              y="25"
               fontFamily="Arial"
               fontSize="14"
               textAnchor="middle"

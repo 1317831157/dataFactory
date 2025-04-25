@@ -77,7 +77,7 @@ export default function MCPCommunication({
           <path d="M-15,0 L15,0 M0,-15 L0,15" stroke="white" strokeWidth="2" />
           <text
             x="0"
-            y="50"
+            y="56"
             fontFamily="Arial"
             fontSize="14"
             fontWeight="bold"
@@ -139,7 +139,7 @@ export default function MCPCommunication({
           <circle cx="-15" cy="10" r="2" fill={themeColor} />
           <text
             x="0"
-            y="50"
+            y="56"
             fontFamily="Arial"
             fontSize="14"
             fontWeight="bold"
@@ -180,7 +180,7 @@ export default function MCPCommunication({
           <path d="M-15,0 L15,0 M0,-15 L0,15" stroke="white" strokeWidth="2" />
           <text
             x="0"
-            y="50"
+            y="58"
             fontFamily="Arial"
             fontSize="14"
             fontWeight="bold"
@@ -242,7 +242,7 @@ export default function MCPCommunication({
           <circle cx="-15" cy="10" r="2" fill={themeColor} />
           <text
             x="0"
-            y="50"
+            y="60"
             fontFamily="Arial"
             fontSize="14"
             fontWeight="bold"
