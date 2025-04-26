@@ -9,3 +9,6 @@ pnpm install
 # 执行打包
 
 pnpm run build-only
+
+#node 版本
+23.9.0
