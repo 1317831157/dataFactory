@@ -39,7 +39,7 @@ const Home: React.FC = () => {
             </svg>
           </div>
           <span className="text-2xl font-bold text-white tracking-wide">
-            LLM-Ready数据集工厂
+            SciData-Factory：数据集生成工厂
           </span>
         </div>
 

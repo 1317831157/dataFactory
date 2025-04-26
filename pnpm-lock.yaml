@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ant-design/icons':
+        specifier: 5.x
+        version: 5.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tailwindcss/vite':
         specifier: ^4.1.4
         version: 4.1.4(vite@6.3.2(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
@@ -17,6 +20,9 @@ importers:
       axios:
         specifier: ^1.9.0
         version: 1.9.0
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       echarts:
         specifier: ^5.6.0
         version: 5.6.0

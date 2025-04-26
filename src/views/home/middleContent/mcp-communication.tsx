@@ -23,7 +23,7 @@ export default function MCPCommunication({
         {/* 背景和标题 */}
         <rect
           x="0"
-          y="40"
+          y="20"
           width="800"
           height="460"
           rx="20"
@@ -37,18 +37,18 @@ export default function MCPCommunication({
         {/* 标题 */}
         <text
           x="400"
-          y="30"
+          y="60"
           fontFamily="Arial"
-          fontSize="24"
+          fontSize="22"
           fontWeight="bold"
-          fill="white"
+          fill={themeColor}
           textAnchor="middle"
         >
           {title}
         </text>
 
         {/* 左上 MCP Client */}
-        <g transform="translate(150, 150)">
+        <g transform="translate(150, 130)">
           <rect
             x="-50"
             y="-40"
@@ -89,7 +89,7 @@ export default function MCPCommunication({
         </g>
 
         {/* 右上 MCP Server */}
-        <g transform="translate(650, 150)">
+        <g transform="translate(650, 130)">
           <rect
             x="-50"
             y="-40"
@@ -151,7 +151,7 @@ export default function MCPCommunication({
         </g>
 
         {/* 左下 MCP Client */}
-        <g transform="translate(150, 350)">
+        <g transform="translate(150, 330)">
           <rect
             x="-50"
             y="-40"
@@ -192,7 +192,7 @@ export default function MCPCommunication({
         </g>
 
         {/* 右下 MCP Server */}
-        <g transform="translate(650, 350)">
+        <g transform="translate(650, 330)">
           <rect
             x="-50"
             y="-40"
@@ -256,18 +256,18 @@ export default function MCPCommunication({
         {/* 垂直连接线 */}
         <line
           x1="150"
-          y1="190"
+          y1="170"
           x2="150"
-          y2="310"
+          y2="290"
           stroke={themeColor}
           strokeWidth="1"
           strokeDasharray="5,5"
         />
         <line
           x1="650"
-          y1="190"
+          y1="170"
           x2="650"
-          y2="310"
+          y2="290"
           stroke={themeColor}
           strokeWidth="1"
           strokeDasharray="5,5"
@@ -276,17 +276,17 @@ export default function MCPCommunication({
         {/* 箭头1：初始请求 */}
         <line
           x1="170"
-          y1="150"
+          y1="130"
           x2="630"
-          y2="150"
+          y2="130"
           stroke={themeColor}
           strokeWidth="1"
           strokeDasharray="5,5"
         />
-        <polygon points="630,150 625,147 625,153" fill={themeColor} />
+        <polygon points="630,130 625,127 625,133" fill={themeColor} />
         <circle
           cx="300"
-          cy="150"
+          cy="130"
           r="15"
           fill="none"
           stroke={themeColor}
@@ -294,7 +294,7 @@ export default function MCPCommunication({
         />
         <text
           x="300"
-          y="155"
+          y="135"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="bold"
@@ -305,7 +305,7 @@ export default function MCPCommunication({
         </text>
         <text
           x="400"
-          y="135"
+          y="115"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="normal"
@@ -318,17 +318,17 @@ export default function MCPCommunication({
         {/* 箭头2：初始响应 */}
         <line
           x1="630"
-          y1="200"
+          y1="180"
           x2="170"
-          y2="200"
+          y2="180"
           stroke={themeColor}
           strokeWidth="1"
           strokeDasharray="5,5"
         />
-        <polygon points="170,200 175,197 175,203" fill={themeColor} />
+        <polygon points="170,180 175,177 175,183" fill={themeColor} />
         <circle
           cx="300"
-          cy="200"
+          cy="180"
           r="15"
           fill="none"
           stroke={themeColor}
@@ -336,7 +336,7 @@ export default function MCPCommunication({
         />
         <text
           x="300"
-          y="205"
+          y="185"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="bold"
@@ -347,7 +347,7 @@ export default function MCPCommunication({
         </text>
         <text
           x="400"
-          y="185"
+          y="165"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="normal"
@@ -360,17 +360,17 @@ export default function MCPCommunication({
         {/* 箭头3：通知 */}
         <line
           x1="170"
-          y1="250"
+          y1="230"
           x2="630"
-          y2="250"
+          y2="230"
           stroke={themeColor}
           strokeWidth="1"
           strokeDasharray="5,5"
         />
-        <polygon points="630,250 625,247 625,253" fill={themeColor} />
+        <polygon points="630,230 625,227 625,233" fill={themeColor} />
         <circle
           cx="300"
-          cy="250"
+          cy="230"
           r="15"
           fill="none"
           stroke={themeColor}
@@ -378,7 +378,7 @@ export default function MCPCommunication({
         />
         <text
           x="300"
-          y="255"
+          y="235"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="bold"
@@ -389,7 +389,7 @@ export default function MCPCommunication({
         </text>
         <text
           x="400"
-          y="235"
+          y="215"
           fontFamily="Arial"
           fontSize="14"
           fontWeight="normal"
@@ -402,7 +402,7 @@ export default function MCPCommunication({
         {/* 准备消息交换 */}
         <rect
           x="200"
-          y="300"
+          y="280"
           width="400"
           height="40"
           rx="10"
@@ -414,7 +414,7 @@ export default function MCPCommunication({
         />
         <text
           x="400"
-          y="325"
+          y="305"
           fontFamily="Arial"
           fontSize="16"
           fontWeight="normal"
@@ -427,7 +427,7 @@ export default function MCPCommunication({
         {/* 底部注释 */}
         <text
           x="400"
-          y="460"
+          y="440"
           fontFamily="Arial"
           fontSize="16"
           fontWeight="bold"

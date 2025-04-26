@@ -16,7 +16,7 @@ export default function MCPArchitecture({
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 800 700"
+        viewBox="0 0 900 800"
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -24,31 +24,31 @@ export default function MCPArchitecture({
         <rect
           x="10"
           y="10"
-          width="780"
-          height="680"
+          width="880"
+          height="780"
           rx="40"
           ry="40"
           fill="#000e17"
           stroke={themeColor}
-          strokeWidth="2"
+          strokeWidth="3"
           fillOpacity="0.7"
         />
 
         {/* 标题 */}
         <text
-          x="400"
-          y="60"
+          x="450"
+          y="70"
           fontFamily="Arial"
-          fontSize="30"
+          fontSize="32"
           fontWeight="bold"
-          fill="white"
+          fill={themeColor}
           textAnchor="middle"
         >
           {title}
         </text>
 
         {/* 中心 MCP 框 */}
-        <g transform="translate(400, 350)">
+        <g transform="translate(450, 400) scale(1.2)">
           <rect
             x="-100"
             y="-50"
@@ -75,7 +75,7 @@ export default function MCPArchitecture({
         </g>
 
         {/* MCP Client */}
-        <g transform="translate(150, 150)">
+        <g transform="translate(170, 180) scale(1.2)">
           <rect
             x="-50"
             y="-40"
@@ -118,7 +118,7 @@ export default function MCPArchitecture({
             x="0"
             y="57"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -128,7 +128,7 @@ export default function MCPArchitecture({
         </g>
 
         {/* MCP Server */}
-        <g transform="translate(650, 150)">
+        <g transform="translate(730, 180) scale(1.2)">
           <rect
             x="-50"
             y="-40"
@@ -197,7 +197,7 @@ export default function MCPArchitecture({
             x="0"
             y="57"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -208,19 +208,19 @@ export default function MCPArchitecture({
 
         {/* Transport Layers */}
         <line
-          x1="200"
-          y1="150"
-          x2="600"
-          y2="150"
+          x1="230"
+          y1="180"
+          x2="670"
+          y2="180"
           stroke={themeColor}
-          strokeWidth="2"
+          strokeWidth="3"
           strokeDasharray="5,5"
         />
         <text
-          x="400"
-          y="135"
+          x="450"
+          y="160"
           fontFamily="Arial"
-          fontSize="16"
+          fontSize="20"
           fontWeight="bold"
           textAnchor="middle"
           fill="white"
@@ -230,7 +230,7 @@ export default function MCPArchitecture({
 
         {/* 底部模块 */}
         {/* Notification */}
-        <g transform="translate(100, 500)">
+        <g transform="translate(120, 570) scale(1.2)">
           <rect
             x="-40"
             y="-40"
@@ -271,7 +271,7 @@ export default function MCPArchitecture({
             x="0"
             y="55"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -281,7 +281,7 @@ export default function MCPArchitecture({
         </g>
 
         {/* Sampling */}
-        <g transform="translate(220, 500)">
+        <g transform="translate(280, 570) scale(1.2)">
           <rect
             x="-40"
             y="-40"
@@ -322,7 +322,7 @@ export default function MCPArchitecture({
             x="0"
             y="55"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -332,7 +332,7 @@ export default function MCPArchitecture({
         </g>
 
         {/* Tools */}
-        <g transform="translate(550, 500)">
+        <g transform="translate(620, 570) scale(1.2)">
           <rect
             x="-40"
             y="-40"
@@ -354,7 +354,7 @@ export default function MCPArchitecture({
             x="0"
             y="55"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -364,7 +364,7 @@ export default function MCPArchitecture({
         </g>
 
         {/* Resources */}
-        <g transform="translate(670, 500)">
+        <g transform="translate(780, 570) scale(1.2)">
           <rect
             x="-40"
             y="-40"
@@ -407,7 +407,7 @@ export default function MCPArchitecture({
             x="0"
             y="55"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fontWeight="bold"
             textAnchor="middle"
             fill="white"
@@ -419,35 +419,48 @@ export default function MCPArchitecture({
         {/* 连接线 */}
         {/* Client 到 Notification 和 Sampling */}
         <path
-          d="M150,190 L150,300 L100,300 L100,460"
+          d="M170,230 L170,350 L120,350 L120,520"
           stroke={themeColor}
-          strokeWidth="1"
+          strokeWidth="2"
           strokeDasharray="5,5"
           fill="none"
         />
         <path
-          d="M150,190 L150,300 L220,300 L220,460"
+          d="M170,230 L170,350 L280,350 L280,520"
           stroke={themeColor}
-          strokeWidth="1"
+          strokeWidth="2"
           strokeDasharray="5,5"
           fill="none"
         />
 
         {/* Server 到 Tools, Resources 和 Protocols */}
         <path
-          d="M650,190 L650,300 L550,300 L550,460"
+          d="M730,230 L730,350 L620,350 L620,520"
           stroke={themeColor}
-          strokeWidth="1"
+          strokeWidth="2"
           strokeDasharray="5,5"
           fill="none"
         />
         <path
-          d="M650,190 L650,300 L670,300 L670,460"
+          d="M730,230 L730,350 L780,350 L780,520"
           stroke={themeColor}
-          strokeWidth="1"
+          strokeWidth="2"
           strokeDasharray="5,5"
           fill="none"
         />
+
+        {/* 底部注释 */}
+        <text
+          x="450"
+          y="720"
+          fontFamily="Arial"
+          fontSize="26"
+          fontWeight="bold"
+          fill={themeColor}
+          textAnchor="middle"
+        >
+          MCP - 架构设计
+        </text>
       </svg>
     </div>
   )

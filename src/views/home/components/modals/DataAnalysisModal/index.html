@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数据处理</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>数据处理</h1>
+
+      <div class="workflow">
+        <!-- 数据输入部分 -->
+        <div class="input-section">
+          <h2>数据源选择</h2>
+          <div class="card-container">
+            <div class="card" data-source="law">
+              <i class="fas fa-balance-scale fa-2x"></i>
+              <span>法规标准</span>
+            </div>
+            <div class="card" data-source="paper">
+              <i class="fas fa-file-alt fa-2x"></i>
+              <span>学术论文</span>
+            </div>
+            <div class="card" data-source="report">
+              <i class="fas fa-chart-line fa-2x"></i>
+              <span>调查报告</span>
+            </div>
+            <div class="card" data-source="policy">
+              <i class="fas fa-file-contract fa-2x"></i>
+              <span>政策文件</span>
+            </div>
+            <div class="card" data-source="book">
+              <i class="fas fa-book fa-2x"></i>
+              <span>专业书籍</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据分类处理部分 -->
+        <div class="process-section">
+          <div class="data-cleaning">
+            <div class="cleaning-step">
+              <div class="step-header">
+                <i class="fas fa-filter"></i>
+                <h3>数据预处理</h3>
+              </div>
+              <div class="step-content">
+                <div class="preprocessing-steps">
+                  <div class="preprocessing-step">
+                    <i class="fas fa-check-circle"></i>
+                    <span>数据清洗</span>
+                  </div>
+                  <div class="preprocessing-step">
+                    <i class="fas fa-check-circle"></i>
+                    <span>格式标准化</span>
+                  </div>
+                  <div class="preprocessing-step">
+                    <i class="fas fa-check-circle"></i>
+                    <span>特征提取</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cleaning-step">
+              <div class="step-header">
+                <i class="fas fa-brain"></i>
+                <h3>智能分类</h3>
+              </div>
+              <div class="step-content">
+                <div class="classification-metrics">
+                  <div class="metric">
+                    <span class="metric-label">准确率</span>
+                    <span class="metric-value">0%</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">精确率</span>
+                    <span class="metric-value">0%</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">召回率</span>
+                    <span class="metric-value">0%</span>
+                  </div>
+                </div>
+                <div class="classification-visualization">
+                  <div class="confusion-matrix">
+                    <!-- 混淆矩阵将通过JS动态生成 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="data-flow">
+            <div class="flow-item">
+              <div class="flow-icon">📊</div>
+              <div class="flow-text">原始数据</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">
+              <div class="flow-icon">🔍</div>
+              <div class="flow-text">数据预处理</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">
+              <div class="flow-icon">🧠</div>
+              <div class="flow-text">智能分类</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">
+              <div class="flow-icon">📈</div>
+              <div class="flow-text">结果验证</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分类结果展示部分 -->
+        <div class="output-section">
+          <h2>分类结果</h2>
+          <div class="result-container">
+            <div class="result-card" data-category="robot">
+              <i class="fas fa-robot fa-2x"></i>
+              <span>工业机器人视觉</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="agriculture">
+              <i class="fas fa-leaf fa-2x"></i>
+              <span>农业与环境监测</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="landslide">
+              <i class="fas fa-mountain fa-2x"></i>
+              <span>地质勘探图像</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="vision">
+              <i class="fas fa-eye fa-2x"></i>
+              <span>机器人视觉</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="microscope">
+              <i class="fas fa-microscope fa-2x"></i>
+              <span>微观结构图像</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="satellite">
+              <i class="fas fa-satellite fa-2x"></i>
+              <span>高分辨率遥感影像</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+            <div class="result-card" data-category="star">
+              <i class="fas fa-star fa-2x"></i>
+              <span>天体观测图像</span>
+              <div class="category-stats">
+                <span class="count">0</span>
+                <span class="confidence">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

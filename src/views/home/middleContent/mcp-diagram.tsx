@@ -9,14 +9,14 @@ interface MCPDiagramProps {
 export default function MCPDiagram({
   themeColor = "#7fbca4",
   secondaryColor = "#6b7db3",
-  title = "What is MCP?",
+  title = "数据采集",
 }: MCPDiagramProps) {
   return (
     <div className="flex justify-center items-center h-full w-full">
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 800 700"
+        viewBox="0 0 900 800"
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -24,37 +24,37 @@ export default function MCPDiagram({
         <rect
           x="10"
           y="10"
-          width="780"
-          height="680"
+          width="880"
+          height="780"
           rx="40"
           ry="40"
           fill="#000e17"
           stroke={themeColor}
-          strokeWidth="2"
+          strokeWidth="3"
           fillOpacity="0.7"
         />
 
         {/* Title */}
         <text
-          x="400"
-          y="80"
+          x="450"
+          y="70"
           fontFamily="Arial"
-          fontSize="40"
+          fontSize="32"
           fontWeight="bold"
           fill="white"
           textAnchor="middle"
         >
-          {title.split(" ").slice(0, -1).join(" ")}{" "}
-          <tspan fill={themeColor}>{title.split(" ").pop()}</tspan>
+          <tspan fill="white">{title.split(" ").slice(0, -1).join(" ")}</tspan>{" "}
+          <tspan fill={themeColor}>{title}</tspan>
         </text>
 
         {/* Database */}
-        <g transform="translate(400, 180)">
+        <g transform="translate(450, 200) scale(1.2)">
           <text
-            x="-40"
+            x="0"
             y="-50"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
@@ -100,7 +100,7 @@ export default function MCPDiagram({
             x="0"
             y="290"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -110,20 +110,20 @@ export default function MCPDiagram({
             x1="0"
             y1="60"
             x2="0"
-            y2="320"
+            y2="290"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
 
         {/* Web APIs */}
-        <g transform="translate(100, 300)">
+        <g transform="translate(120, 330) scale(1.2)">
           <text
             x="0"
             y="-50"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
@@ -153,7 +153,7 @@ export default function MCPDiagram({
             x="0"
             y="0"
             fontFamily="Arial"
-            fontSize="14"
+            fontSize="16"
             fill="white"
             textAnchor="middle"
             dominantBaseline="middle"
@@ -165,7 +165,7 @@ export default function MCPDiagram({
             x="150"
             y="0"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -178,17 +178,17 @@ export default function MCPDiagram({
             y2="0"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
 
         {/* GitHub */}
-        <g transform="translate(700, 300)">
+        <g transform="translate(780, 330) scale(1.2)">
           <text
             x="0"
             y="-50"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
@@ -214,7 +214,7 @@ export default function MCPDiagram({
             x="-150"
             y="0"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -227,12 +227,12 @@ export default function MCPDiagram({
             y2="0"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
 
         {/* AI Application */}
-        <g transform="translate(400, 420)">
+        <g transform="translate(450, 460) scale(1.3)">
           <rect
             x="-100"
             y="-70"
@@ -277,7 +277,7 @@ export default function MCPDiagram({
             x="0"
             y="-20"
             fontFamily="Arial"
-            fontSize="16"
+            fontSize="18"
             fill="#d12a2a"
             textAnchor="middle"
           >
@@ -288,7 +288,7 @@ export default function MCPDiagram({
             x="0"
             y="100"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
@@ -297,18 +297,18 @@ export default function MCPDiagram({
         </g>
 
         {/* Slack */}
-        <g transform="translate(100, 550)">
+        <g transform="translate(120, 600) scale(1.2)">
           <text
             x="0"
             y="70"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
             Slack
           </text>
-          <g transform="scale(0.8)">
+          <g transform="scale(0.9)">
             <rect
               x="-30"
               y="-30"
@@ -350,7 +350,7 @@ export default function MCPDiagram({
             x="150"
             y="0"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -363,23 +363,23 @@ export default function MCPDiagram({
             y2="0"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
 
         {/* Gmail */}
-        <g transform="translate(700, 550)">
+        <g transform="translate(780, 600) scale(1.2)">
           <text
             x="0"
             y="70"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
             Gmail
           </text>
-          <g transform="scale(0.8)">
+          <g transform="scale(0.9)">
             <path d="M-30,-30 L30,-30 L30,30 L-30,30 Z" fill="#4285f4" />
             <path d="M-30,-30 L0,0 L30,-30 Z" fill="#ea4335" />
             <path d="M-30,30 L0,0 L-30,-30 Z" fill="#34a853" />
@@ -389,7 +389,7 @@ export default function MCPDiagram({
             x="-150"
             y="0"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -402,17 +402,17 @@ export default function MCPDiagram({
             y2="0"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
 
         {/* Local Filesystem */}
-        <g transform="translate(400, 600)">
+        <g transform="translate(450, 670) scale(1.3)">
           <text
             x="0"
             y="45"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill="white"
           >
@@ -446,7 +446,7 @@ export default function MCPDiagram({
             x="0"
             y="-100"
             fontFamily="Arial"
-            fontSize="20"
+            fontSize="22"
             textAnchor="middle"
             fill={themeColor}
           >
@@ -459,7 +459,7 @@ export default function MCPDiagram({
             y2="-120"
             stroke={themeColor}
             strokeDasharray="5,5"
-            strokeWidth="2"
+            strokeWidth="3"
           />
         </g>
       </svg>

@@ -7,7 +7,7 @@ interface MCPProtocolDiagramProps {
 }
 
 export default function MCPProtocolDiagram({
-  title = "协议图",
+  title = "数据处理",
   themeColor = "#ffaa00",
   secondaryColor = "#cc8800",
 }: MCPProtocolDiagramProps) {
@@ -16,43 +16,44 @@ export default function MCPProtocolDiagram({
       <svg
         width="100%"
         height="100%"
-        viewBox="0 0 800 500"
+        viewBox="0 0 900 800"
         preserveAspectRatio="xMidYMid meet"
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* 背景和标题 */}
         <rect
-          x="0"
-          y="40"
-          width="800"
-          height="460"
-          rx="20"
-          ry="20"
+          x="10"
+          y="10"
+          width="880"
+          height="780"
+          rx="40"
+          ry="40"
           fill="#000e17"
           stroke={themeColor}
-          strokeWidth="2"
+          strokeWidth="3"
           fillOpacity="0.7"
         />
 
         {/* 标题 */}
         <text
-          x="400"
-          y="30"
+          x="450"
+          y="75"
           fontFamily="Arial"
-          fontSize="24"
+          fontSize="30"
           fontWeight="bold"
           fill="white"
           textAnchor="middle"
         >
-          {title}
+          <tspan fill="white">{title.split(" ").slice(0, -1).join(" ")}</tspan>{" "}
+          <tspan fill={themeColor}>{title}</tspan>
         </text>
 
         {/* MCP Host 标签 */}
         <text
-          x="35"
-          y="70"
+          x="50"
+          y="130"
           fontFamily="Arial"
-          fontSize="18"
+          fontSize="26"
           fontWeight="bold"
           fill={themeColor}
         >
@@ -61,20 +62,20 @@ export default function MCPProtocolDiagram({
 
         {/* 黄色背景区域 */}
         <rect
-          x="35"
-          y="90"
-          width="730"
-          height="380"
-          rx="15"
-          ry="15"
+          x="50"
+          y="160"
+          width="800"
+          height="560"
+          rx="30"
+          ry="30"
           fill={secondaryColor}
           stroke={themeColor}
-          strokeWidth="1"
+          strokeWidth="2"
           fillOpacity="0.2"
         />
 
         {/* 第一行 - Claude */}
-        <g transform="translate(170, 150)">
+        <g transform="translate(130, 250) scale(1.3)">
           {/* Claude 图标和文本 */}
           <text
             x="0"
@@ -130,7 +131,7 @@ export default function MCPProtocolDiagram({
             x2="250"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
           />
           <polygon points="250,0 245,-5 245,5" fill={themeColor} />
           <text
@@ -174,7 +175,7 @@ export default function MCPProtocolDiagram({
             x2="380"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
           />
           <polygon points="380,0 375,-5 375,5" fill={themeColor} />
 
@@ -236,7 +237,7 @@ export default function MCPProtocolDiagram({
         </g>
 
         {/* 第二行 - JIT */}
-        <g transform="translate(170, 250)">
+        <g transform="translate(130, 380) scale(1.3)">
           {/* JIT 图标和文本 */}
           <rect
             x="20"
@@ -310,7 +311,7 @@ export default function MCPProtocolDiagram({
             x2="250"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
           />
           <polygon points="250,0 245,-5 245,5" fill={themeColor} />
           <text
@@ -354,7 +355,7 @@ export default function MCPProtocolDiagram({
             x2="380"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
             strokeDasharray="5,5"
           />
           <polygon points="380,0 375,-5 375,5" fill={themeColor} />
@@ -418,7 +419,7 @@ export default function MCPProtocolDiagram({
         </g>
 
         {/* 第三行 - AI Think */}
-        <g transform="translate(170, 350)">
+        <g transform="translate(130, 510) scale(1.3)">
           {/* AI Think 图标和文本 */}
           <rect
             x="20"
@@ -504,7 +505,7 @@ export default function MCPProtocolDiagram({
             x2="250"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
           />
           <polygon points="250,0 245,-5 245,5" fill={themeColor} />
           <text
@@ -548,12 +549,12 @@ export default function MCPProtocolDiagram({
             x2="380"
             y2="0"
             stroke={themeColor}
-            strokeWidth="1"
+            strokeWidth="1.5"
           />
           <polygon points="380,0 375,-5 375,5" fill={themeColor} />
 
           {/* Web APIs 和图标 */}
-          <g transform="translate(440, 15)">
+          <g transform="translate(420, 15)">
             <text
               x="0"
               y="25"
@@ -640,7 +641,7 @@ export default function MCPProtocolDiagram({
         </g>
 
         {/* 服务器图标细节 */}
-        <g transform="translate(390, 150)">
+        <g transform="translate(412, 250) scale(1.3)">
           <rect
             x="-15"
             y="-10"
@@ -676,7 +677,7 @@ export default function MCPProtocolDiagram({
           />
         </g>
 
-        <g transform="translate(390, 250)">
+        <g transform="translate(412, 380) scale(1.3)">
           <rect
             x="-15"
             y="-10"
@@ -712,7 +713,7 @@ export default function MCPProtocolDiagram({
           />
         </g>
 
-        <g transform="translate(390, 350)">
+        <g transform="translate(412, 510) scale(1.3)">
           <rect
             x="-15"
             y="-10"
@@ -750,10 +751,10 @@ export default function MCPProtocolDiagram({
 
         {/* 底部注释 */}
         <text
-          x="400"
-          y="460"
+          x="450"
+          y="700"
           fontFamily="Arial"
-          fontSize="16"
+          fontSize="26"
           fontWeight="bold"
           fill={themeColor}
           textAnchor="middle"

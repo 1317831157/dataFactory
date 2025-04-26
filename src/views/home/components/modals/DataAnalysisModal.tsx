@@ -1,474 +1,643 @@
-import React, { useState, useCallback } from "react"
-import { Row, Col, Radio, Card, Statistic } from "antd"
-import EChart from "../../../../components/EChart"
-import type { EChartsOption } from "echarts"
+import React, { useState, useEffect, useRef } from "react"
+import * as echarts from "echarts"
+import {
+  BookOutlined,
+  FileTextOutlined,
+  AreaChartOutlined,
+  ReadOutlined,
+  SolutionOutlined,
+  RobotOutlined,
+  EyeOutlined,
+  BranchesOutlined,
+  ExperimentOutlined,
+  RocketOutlined,
+  StarOutlined,
+  FilterOutlined,
+  BankOutlined,
+  DatabaseOutlined,
+  CheckCircleOutlined,
+  PieChartOutlined,
+  NumberOutlined,
+  PercentageOutlined,
+} from "@ant-design/icons"
 
+// 定义组件的props类型
 interface DataAnalysisModalProps {
-  themeColor: string
-  secondaryColor: string
+  themeColor?: string
+  secondaryColor?: string
 }
 
-const DataAnalysisModal: React.FC<DataAnalysisModalProps> = ({
-  themeColor,
-  secondaryColor,
-}) => {
-  // 当前选中的分析类型
-  const [analysisType, setAnalysisType] = useState<string>("trend")
-  // 当前选中的时间范围
-  const [timeRange, setTimeRange] = useState<string>("week")
-  
-  // 创建渐变色的辅助函数
-  const createGradient = useCallback((opacity1: number = 0.7, opacity2: number = 0.1) => {
-    return {
-      type: "linear" as const,
-      x: 0,
-      y: 0,
-      x2: 0,
-      y2: 1,
-      colorStops: [
-        {
-          offset: 0,
-          color: `${themeColor}${Math.floor(opacity1 * 255).toString(16)}`,
-        },
-        {
-          offset: 1,
-          color: `${themeColor}${Math.floor(opacity2 * 255).toString(16)}`,
-        },
-      ],
-    }
-  }, [themeColor])
-  
-  // 模拟数据 - 趋势分析数据
-  const trendData = {
-    week: [120, 132, 101, 134, 90, 230, 210],
-    month: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90, 230, 210, 90, 230],
-    year: Array.from({ length: 12 }, () => Math.floor(Math.random() * 1000) + 100)
+const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
+  // 数据源到目标的映射关系
+  const sourceToCategories = {
+    law: ["robot", "vision"],
+    paper: ["microscope", "satellite"],
+    report: ["agriculture", "landslide"],
+    policy: ["robot", "agriculture"],
+    book: ["star", "satellite"],
   }
-  
-  // 模拟数据 - 字段分布数据
-  const fieldDistribution = [
-    { value: 335, name: '字段A' },
-    { value: 310, name: '字段B' },
-    { value: 234, name: '字段C' },
-    { value: 155, name: '字段D' },
-    { value: 120, name: '字段E' }
-  ]
-  
-  // 模拟数据 - 聚类分析数据
-  const clusterData = [
-    // 群集1
-    ...Array.from({ length: 20 }, () => [
-      Math.random() * 10 + 5,
-      Math.random() * 10 + 5,
-      0
-    ]),
-    // 群集2
-    ...Array.from({ length: 20 }, () => [
-      Math.random() * 10 + 20,
-      Math.random() * 10 + 5,
-      1
-    ]),
-    // 群集3
-    ...Array.from({ length: 20 }, () => [
-      Math.random() * 10 + 5,
-      Math.random() * 10 + 20,
-      2
-    ])
-  ]
-  
-  // 时间标签映射
-  const timeLabels = {
-    week: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-    month: Array.from({ length: 30 }, (_, i) => `${i + 1}日`),
-    year: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+
+  // 分类结果统计状态
+  const [categoryStats, setCategoryStats] = useState({
+    robot: { count: 0, confidence: 0 },
+    agriculture: { count: 0, confidence: 0 },
+    landslide: { count: 0, confidence: 0 },
+    vision: { count: 0, confidence: 0 },
+    microscope: { count: 0, confidence: 0 },
+    satellite: { count: 0, confidence: 0 },
+    star: { count: 0, confidence: 0 },
+  })
+
+  // 激活的数据源
+  const [activeSource, setActiveSource] = useState<string | null>(null)
+
+  // 进度状态
+  const [preprocessProgress, setPreprocessProgress] = useState(0)
+  const [preprocessSteps, setPreprocessSteps] = useState<string[]>([])
+
+  // 指标状态
+  const [metrics, setMetrics] = useState({
+    accuracy: 0,
+    precision: 0,
+    recall: 0,
+  })
+
+  // Refs
+  const confusionMatrixRef = useRef<HTMLDivElement>(null)
+  const flowIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // 获取类别图标
+  const getCategoryIcon = (category: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      robot: <RobotOutlined className="text-2xl" />,
+      agriculture: <BranchesOutlined className="text-2xl" />,
+      landslide: <AreaChartOutlined className="text-2xl" />,
+      vision: <EyeOutlined className="text-2xl" />,
+      microscope: <ExperimentOutlined className="text-2xl" />,
+      satellite: <RocketOutlined className="text-2xl" />,
+      star: <StarOutlined className="text-2xl" />,
+    }
+    return icons[category]
   }
-  
-  // 趋势分析图表配置
-  const getTrendChartOption = useCallback((): EChartsOption => {
-    return {
-      tooltip: {
-        trigger: 'axis',
-        formatter: '{b}: {c} 个',
-      },
-      grid: {
-        top: '15%',
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true,
-      },
-      xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: timeLabels[timeRange as keyof typeof timeLabels],
-        axisLine: {
-          lineStyle: {
-            color: `${secondaryColor}40`,
-          },
-        },
-        axisLabel: {
-          color: `${secondaryColor}CC`,
-        },
-      },
-      yAxis: {
-        type: 'value',
-        axisLine: {
-          lineStyle: {
-            color: `${secondaryColor}40`,
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: `${secondaryColor}20`,
-          },
-        },
-        axisLabel: {
-          color: `${secondaryColor}CC`,
-        },
-      },
-      series: [
-        {
-          name: '数据量',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 6,
-          lineStyle: {
-            width: 3,
-            color: themeColor,
-          },
-          areaStyle: {
-            color: createGradient(),
-          },
-          emphasis: {
-            focus: 'series',
-          },
-          data: trendData[timeRange as keyof typeof trendData],
-        },
-      ],
-      backgroundColor: 'transparent',
+
+  // 初始化数据流动画
+  useEffect(() => {
+    const flowItems = document.querySelectorAll(".flow-item")
+    let currentIndex = 0
+
+    const highlightNext = () => {
+      flowItems.forEach((item) => item.classList.remove("active"))
+      flowItems[currentIndex].classList.add("active")
+      currentIndex = (currentIndex + 1) % flowItems.length
     }
-  }, [themeColor, secondaryColor, timeRange, createGradient])
-  
-  // 饼图配置 - 字段分布
-  const getPieChartOption = useCallback((): EChartsOption => {
-    return {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b}: {c} ({d}%)',
-      },
-      legend: {
-        orient: 'vertical',
-        right: '5%',
-        top: 'center',
-        textStyle: {
-          color: '#fff',
-        },
-      },
-      series: [
-        {
-          name: '字段分布',
-          type: 'pie',
-          radius: ['40%', '70%'],
-          center: ['50%', '50%'],
-          avoidLabelOverlap: true,
-          itemStyle: {
-            borderRadius: 6,
-            borderColor: 'rgba(0, 0, 0, 0.2)',
-            borderWidth: 2,
-          },
-          label: {
-            show: true,
-            position: 'outside',
-            formatter: '{b}: {c}',
-            color: '#fff',
-          },
-          labelLine: {
-            length: 15,
-            length2: 10,
-            lineStyle: { color: `${secondaryColor}80` },
-          },
-          emphasis: {
-            focus: 'series',
-            scaleSize: 10,
-          },
-          data: fieldDistribution.map((item, index) => ({
-            ...item,
-            itemStyle: {
-              color: index === 0 ? themeColor : undefined,
-            },
-          })),
-        },
-      ],
-      backgroundColor: 'transparent',
+
+    highlightNext()
+    flowIntervalRef.current = setInterval(highlightNext, 2000)
+
+    return () => {
+      if (flowIntervalRef.current) {
+        clearInterval(flowIntervalRef.current)
+      }
     }
-  }, [themeColor, secondaryColor])
-  
-  // 散点图配置 - 聚类分析
-  const getScatterChartOption = useCallback((): EChartsOption => {
-    const clusterColors = [themeColor, '#00ff7f', '#ffaa00'];
-    
-    return {
-      tooltip: {
-        trigger: 'item',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        formatter: function(params: any) {
-          return `(${params.value[0].toFixed(2)}, ${params.value[1].toFixed(2)})<br/>类别: ${params.value[2] + 1}`;
+  }, [])
+
+  // 关键词提取动画
+  const initKeywordExtraction = () => {
+    const keywords = [
+      "机器学习",
+      "深度学习",
+      "神经网络",
+      "数据挖掘",
+      "自然语言处理",
+      "计算机视觉",
+      "图像识别",
+      "模式识别",
+      "特征提取",
+      "分类算法",
+      "回归分析",
+      "聚类分析",
+    ]
+
+    setPreprocessSteps([])
+    let extractedKeywords: string[] = []
+    let progress = 0
+
+    const extractInterval = setInterval(() => {
+      if (extractedKeywords.length < keywords.length) {
+        extractedKeywords = [
+          ...extractedKeywords,
+          keywords[extractedKeywords.length],
+        ]
+        progress = (extractedKeywords.length / keywords.length) * 100
+        setPreprocessProgress(progress)
+      } else {
+        clearInterval(extractInterval)
+        initPreprocessing()
+      }
+    }, 500)
+
+    return () => clearInterval(extractInterval)
+  }
+
+  // 预处理步骤动画
+  const initPreprocessing = () => {
+    const steps = ["数据清洗", "格式标准化", "特征提取"]
+    let currentStep = 0
+
+    const processNextStep = () => {
+      if (currentStep < steps.length) {
+        setPreprocessSteps((prev) => [...prev, steps[currentStep]])
+        currentStep++
+        setTimeout(processNextStep, 1000)
+      } else {
+        initClassification()
+      }
+    }
+
+    processNextStep()
+  }
+
+  // 分类初始化
+  const initClassification = () => {
+    // 更新分类指标
+    const updateMetricsInterval = setInterval(() => {
+      setMetrics((prev) => {
+        if (prev.accuracy < 0.95) {
+          return {
+            accuracy: prev.accuracy + 0.01,
+            precision: prev.precision + 0.01,
+            recall: prev.recall + 0.01,
+          }
+        } else {
+          clearInterval(updateMetricsInterval)
+          return prev
         }
-      },
-      grid: {
-        top: '10%',
-        left: '3%',
-        right: '5%',
-        bottom: '5%',
-        containLabel: true,
-      },
-      xAxis: {
-        type: 'value',
-        axisLine: {
-          lineStyle: {
-            color: `${secondaryColor}40`,
+      })
+    }, 100)
+
+    // 创建混淆矩阵图表
+    if (confusionMatrixRef.current) {
+      const chart = echarts.init(confusionMatrixRef.current)
+
+      const categories = [
+        "robot",
+        "agriculture",
+        "landslide",
+        "vision",
+        "microscope",
+        "satellite",
+        "star",
+      ]
+      const data: [number, number, number][] = []
+
+      categories.forEach((source, i) => {
+        categories.forEach((target, j) => {
+          // 对角线上的值较大，表示分类正确的比例高
+          const value =
+            i === j
+              ? Math.floor(Math.random() * 5) + 5
+              : Math.floor(Math.random() * 3)
+          data.push([i, j, value])
+        })
+      })
+
+      const option = {
+        tooltip: {
+          position: "top",
+        },
+        grid: {
+          left: "3%",
+          right: "7%",
+          bottom: "7%",
+          top: "7%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          data: categories.map((cat) => cat.substring(0, 3)),
+          splitArea: {
+            show: true,
+          },
+          axisLabel: {
+            color: "#fff",
           },
         },
-        splitLine: {
-          lineStyle: {
-            color: `${secondaryColor}20`,
+        yAxis: {
+          type: "category",
+          data: categories.map((cat) => cat.substring(0, 3)),
+          splitArea: {
+            show: true,
+          },
+          axisLabel: {
+            color: "#fff",
           },
         },
-        axisLabel: {
-          color: `${secondaryColor}CC`,
-        },
-      },
-      yAxis: {
-        type: 'value',
-        axisLine: {
-          lineStyle: {
-            color: `${secondaryColor}40`,
+        visualMap: {
+          min: 0,
+          max: 10,
+          calculable: true,
+          orient: "horizontal",
+          left: "center",
+          bottom: "0%",
+          textStyle: {
+            color: "#fff",
+          },
+          inRange: {
+            color: [
+              "#313695",
+              "#4575b4",
+              "#74add1",
+              "#abd9e9",
+              "#e0f3f8",
+              "#ffffbf",
+              "#fee090",
+              "#fdae61",
+              "#f46d43",
+              "#d73027",
+              "#a50026",
+            ],
           },
         },
-        splitLine: {
-          lineStyle: {
-            color: `${secondaryColor}20`,
-          },
-        },
-        axisLabel: {
-          color: `${secondaryColor}CC`,
-        },
-      },
-      series: [
-        {
-          type: 'scatter',
-          symbolSize: 12,
-          itemStyle: {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            color: (params: any) => {
-              return clusterColors[params.value[2]];
+        series: [
+          {
+            name: "分类结果",
+            type: "heatmap",
+            data: data,
+            label: {
+              show: true,
             },
-            borderColor: 'rgba(255, 255, 255, 0.3)',
-            borderWidth: 1,
-            opacity: 0.8,
-          },
-          emphasis: {
-            itemStyle: {
-              shadowBlur: 10,
-              shadowColor: 'rgba(255, 255, 255, 0.5)',
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowColor: "rgba(0, 0, 0, 0.5)",
+              },
             },
           },
-          data: clusterData,
-        },
-      ],
-      backgroundColor: 'transparent',
+        ],
+      }
+
+      chart.setOption(option)
+
+      // 窗口大小变化时重新调整图表大小
+      window.addEventListener("resize", () => {
+        chart.resize()
+      })
     }
-  }, [themeColor, secondaryColor])
-  
-  // 根据选中的分析类型返回相应的图表配置
-  const getChartOption = useCallback(() => {
-    switch (analysisType) {
-      case 'trend':
-        return getTrendChartOption()
-      case 'field':
-        return getPieChartOption()
-      case 'cluster':
-        return getScatterChartOption()
-      default:
-        return getTrendChartOption()
-    }
-  }, [analysisType, getTrendChartOption, getPieChartOption, getScatterChartOption])
-  
-  // 统计指标
-  const statisticsData = {
-    trend: [
-      { title: '总数据量', value: 12580, precision: 0, suffix: '条', color: themeColor },
-      { title: '平均增长率', value: 12.7, precision: 1, suffix: '%', color: '#00ff7f' },
-      { title: '峰值数据', value: 1253, precision: 0, suffix: '条', color: '#ffaa00' },
-      { title: '数据预测', value: 15800, precision: 0, suffix: '条', color: '#ff6b00' },
-    ],
-    field: [
-      { title: '字段数量', value: 28, precision: 0, suffix: '个', color: themeColor },
-      { title: '主要字段占比', value: 68.5, precision: 1, suffix: '%', color: '#00ff7f' },
-      { title: '最大字段量', value: 335, precision: 0, suffix: '条', color: '#ffaa00' },
-      { title: '平均分布', value: 230.8, precision: 1, suffix: '条', color: '#ff6b00' },
-    ],
-    cluster: [
-      { title: '类别数量', value: 3, precision: 0, suffix: '个', color: themeColor },
-      { title: '聚类质量', value: 85.6, precision: 1, suffix: '%', color: '#00ff7f' },
-      { title: '样本数量', value: 60, precision: 0, suffix: '个', color: '#ffaa00' },
-      { title: '特征维度', value: 2, precision: 0, suffix: '维', color: '#ff6b00' },
-    ],
+
+    // 更新分类结果
+    updateCategoryStats()
   }
-  
-  // 时间范围选择器（仅在趋势分析中显示）
-  const TimeRangeSelector = () => (
-    <div className="mb-4">
-      <Radio.Group 
-        value={timeRange} 
-        onChange={(e) => setTimeRange(e.target.value)}
-        buttonStyle="solid"
-        size="middle"
-        className="custom-radio-group"
-      >
-        <Radio.Button 
-          value="week"
-          style={{ 
-            backgroundColor: timeRange === "week" ? themeColor : 'rgba(0,21,41,0.6)',
-            borderColor: `${themeColor}80`,
-            color: timeRange === "week" ? "#fff" : `${secondaryColor}D9`,
-          }}
-        >
-          周
-        </Radio.Button>
-        <Radio.Button 
-          value="month"
-          style={{ 
-            backgroundColor: timeRange === "month" ? themeColor : 'rgba(0,21,41,0.6)',
-            borderColor: `${themeColor}80`,
-            color: timeRange === "month" ? "#fff" : `${secondaryColor}D9`,
-          }}
-        >
-          月
-        </Radio.Button>
-        <Radio.Button 
-          value="year"
-          style={{ 
-            backgroundColor: timeRange === "year" ? themeColor : 'rgba(0,21,41,0.6)',
-            borderColor: `${themeColor}80`,
-            color: timeRange === "year" ? "#fff" : `${secondaryColor}D9`,
-          }}
-        >
-          年
-        </Radio.Button>
-      </Radio.Group>
-    </div>
-  )
+
+  // 更新分类结果
+  const updateCategoryStats = () => {
+    if (!activeSource) return
+
+    const categories = Object.keys(categoryStats)
+    let currentIndex = 0
+
+    function updateNextCategory() {
+      if (currentIndex < categories.length) {
+        const category = categories[currentIndex]
+
+        setCategoryStats((prev) => {
+          const newStats = { ...prev }
+
+          // 如果是活动数据源映射的类别，增加更多计数和置信度
+          if (
+            sourceToCategories[
+              activeSource as keyof typeof sourceToCategories
+            ]?.includes(category)
+          ) {
+            newStats[category as keyof typeof categoryStats] = {
+              count:
+                prev[category as keyof typeof categoryStats].count +
+                Math.floor(Math.random() * 5) +
+                5,
+              confidence: Math.min(
+                0.95,
+                prev[category as keyof typeof categoryStats].confidence + 0.1
+              ),
+            }
+          } else {
+            // 其他类别增加少量计数
+            newStats[category as keyof typeof categoryStats] = {
+              count:
+                prev[category as keyof typeof categoryStats].count +
+                Math.floor(Math.random() * 2),
+              confidence: Math.min(
+                0.4,
+                prev[category as keyof typeof categoryStats].confidence + 0.02
+              ),
+            }
+          }
+
+          return newStats
+        })
+
+        currentIndex++
+        setTimeout(updateNextCategory, 500)
+      }
+    }
+
+    updateNextCategory()
+  }
+
+  // 处理卡片点击
+  const handleCardClick = (source: string) => {
+    // 重置所有状态
+    setCategoryStats({
+      robot: { count: 0, confidence: 0 },
+      agriculture: { count: 0, confidence: 0 },
+      landslide: { count: 0, confidence: 0 },
+      vision: { count: 0, confidence: 0 },
+      microscope: { count: 0, confidence: 0 },
+      satellite: { count: 0, confidence: 0 },
+      star: { count: 0, confidence: 0 },
+    })
+    setActiveSource(source)
+    setPreprocessProgress(0)
+    setPreprocessSteps([])
+    setMetrics({
+      accuracy: 0,
+      precision: 0,
+      recall: 0,
+    })
+
+    // 开始关键词提取
+    setTimeout(initKeywordExtraction, 500)
+  }
+
+  // 数据源图标映射
+  const getSourceIcon = (source: string) => {
+    const icons: Record<string, React.ReactNode> = {
+      law: <SolutionOutlined className="text-2xl" />,
+      paper: <FileTextOutlined className="text-2xl" />,
+      report: <AreaChartOutlined className="text-2xl" />,
+      policy: <ReadOutlined className="text-2xl" />,
+      book: <BookOutlined className="text-2xl" />,
+    }
+    return icons[source]
+  }
 
   return (
-    <div className="w-full h-full bg-[rgba(0,21,41,0.8)] p-4 text-white">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold" style={{ color: themeColor }}>
-          数据分析
-        </h3>
-        <div className="flex items-center gap-3">
-          <Radio.Group 
-            value={analysisType} 
-            onChange={(e) => setAnalysisType(e.target.value)}
-            buttonStyle="solid"
-            size="middle"
-            className="custom-radio-group"
-          >
-            <Radio.Button 
-              value="trend"
-              style={{ 
-                backgroundColor: analysisType === "trend" ? themeColor : 'rgba(0,21,41,0.6)',
-                borderColor: `${themeColor}80`,
-                color: analysisType === "trend" ? "#fff" : `${secondaryColor}D9`,
-              }}
-            >
-              趋势分析
-            </Radio.Button>
-            <Radio.Button 
-              value="field"
-              style={{ 
-                backgroundColor: analysisType === "field" ? themeColor : 'rgba(0,21,41,0.6)',
-                borderColor: `${themeColor}80`,
-                color: analysisType === "field" ? "#fff" : `${secondaryColor}D9`,
-              }}
-            >
-              字段分布
-            </Radio.Button>
-            <Radio.Button 
-              value="cluster"
-              style={{ 
-                backgroundColor: analysisType === "cluster" ? themeColor : 'rgba(0,21,41,0.6)',
-                borderColor: `${themeColor}80`,
-                color: analysisType === "cluster" ? "#fff" : `${secondaryColor}D9`,
-              }}
-            >
-              聚类分析
-            </Radio.Button>
-          </Radio.Group>
+    <div className="max-w-5xl mx-auto p-6 bg-gray-900/30 backdrop-blur-md rounded-3xl shadow-2xl border border-cyan-500/10 text-white">
+      {/* <h2 className="text-3xl text-center mb-8 text-cyan-400 font-bold relative">
+        数据分析
+        <span className="block w-20 h-1 mx-auto mt-3 bg-gradient-to-r from-cyan-400 to-transparent rounded"></span>
+      </h2> */}
+
+      <div className="flex flex-col gap-8">
+        {/* 数据输入部分 */}
+        <div className="bg-gray-800/50 p-6 rounded-2xl shadow-md backdrop-blur-md border border-cyan-500/10 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+          <h2 className="text-xl font-bold mb-4 text-cyan-400 flex items-center">
+            <DatabaseOutlined className="mr-2" /> 数据源选择
+          </h2>
+          <div className="grid grid-cols-5 gap-5 p-2">
+            {Object.keys(sourceToCategories).map((source) => (
+              <div
+                key={source}
+                className={`flex flex-col items-center p-4 bg-gray-800/60 rounded-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border border-cyan-500/10 hover:shadow-cyan-500/20 ${
+                  activeSource === source
+                    ? "bg-cyan-500/20 border-cyan-400 shadow-lg shadow-cyan-500/30"
+                    : ""
+                }`}
+                onClick={() => handleCardClick(source)}
+              >
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 border transition-all duration-300 ${
+                    activeSource === source
+                      ? "bg-cyan-500 border-cyan-300 text-white"
+                      : "bg-gray-800 border-cyan-500/20 text-cyan-400"
+                  }`}
+                >
+                  {getSourceIcon(source)}
+                </div>
+                <span
+                  className={`text-sm text-center font-medium ${
+                    activeSource === source ? "text-white" : "text-gray-200"
+                  }`}
+                >
+                  {getSourceLabel(source)}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      
-      {analysisType === 'trend' && <TimeRangeSelector />}
-      
-      {/* 统计卡片 */}
-      <Row gutter={[16, 16]} className="mb-4">
-        {statisticsData[analysisType as keyof typeof statisticsData].map((stat, index) => (
-          <Col span={6} key={index}>
-            <Card 
-              className="h-full" 
-              style={{ 
-                backgroundColor: 'rgba(0,21,41,0.6)', 
-                borderColor: `${stat.color}50`,
-                boxShadow: `0 0 10px ${stat.color}30`
-              }}
-            >
-              <Statistic
-                title={<span style={{ color: '#e6f7ff' }}>{stat.title}</span>}
-                value={stat.value}
-                precision={stat.precision}
-                valueStyle={{ color: stat.color, fontWeight: 'bold' }}
-                suffix={stat.suffix}
-              />
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      
-      {/* 图表区域 */}
-      <div className="bg-[rgba(0,21,41,0.6)] rounded-md p-4 border border-[rgba(32,128,192,0.6)] shadow-lg" style={{ height: '400px' }}>
-        <EChart 
-          option={getChartOption()} 
-          height="100%" 
-          width="100%"
-          autoResize={true}
-        />
-      </div>
-      
-      {/* 分析结论 */}
-      <div className="mt-4 p-3 rounded-md bg-[rgba(0,21,41,0.6)] border-l-4" style={{ borderColor: themeColor }}>
-        <h4 className="font-bold mb-2" style={{ color: themeColor }}>分析结论</h4>
-        {analysisType === 'trend' && (
-          <p className="text-sm text-gray-300">
-            数据呈现明显的周期性波动，在{timeRange === 'week' ? '周中' : timeRange === 'month' ? '月中' : '年中'}达到峰值。总体趋势呈上升态势，
-            环比增长12.7%。预测未来数据量将继续保持稳定增长，建议适当增加存储容量和处理能力。
-          </p>
-        )}
-        {analysisType === 'field' && (
-          <p className="text-sm text-gray-300">
-            数据字段分布不均匀，主要集中在字段A和字段B，两者占比超过总体的68.5%。
-            建议优化数据结构，减少数据偏斜，提高查询效率。可考虑对主要字段进行索引优化。
-          </p>
-        )}
-        {analysisType === 'cluster' && (
-          <p className="text-sm text-gray-300">
-            通过无监督学习聚类算法，数据可明显分为3个类别，聚类质量评分为85.6%。
-            各类别边界清晰，内部凝聚性高。这表明数据具有良好的结构特性，适合进一步的分类预测分析。
-          </p>
-        )}
+
+        {/* 数据分类处理部分 */}
+        <div className="bg-gray-800/50 p-6 rounded-2xl shadow-md backdrop-blur-md border border-cyan-500/10">
+          <div className="flex flex-row gap-6">
+            {/* 左侧：数据预处理和智能分类（上下排列） */}
+            <div className="w-3/4 flex flex-col gap-6">
+              <div className="bg-gray-800/60 rounded-xl p-4 shadow-md border border-cyan-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-cyan-500/20">
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-cyan-500/10">
+                  <FilterOutlined className="text-lg text-cyan-400" />
+                  <h3 className="text-lg text-white font-medium">数据预处理</h3>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="bg-gray-900/40 p-3 rounded-lg border border-cyan-500/10">
+                    {["数据清洗", "格式标准化", "特征提取"].map(
+                      (step, index) => (
+                        <div
+                          key={index}
+                          className={`flex items-center gap-3 p-2 my-1 rounded-md transition-all duration-300 ${
+                            preprocessSteps.includes(step)
+                              ? "bg-cyan-500/20"
+                              : "bg-cyan-500/5"
+                          }`}
+                        >
+                          <CheckCircleOutlined
+                            className={
+                              preprocessSteps.includes(step)
+                                ? "text-white"
+                                : "text-cyan-400"
+                            }
+                          />
+                          <span className="text-white text-sm">{step}</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                  <div className="w-full h-2 bg-gray-900/60 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full transition-all duration-500"
+                      style={{ width: `${preprocessProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800/60 rounded-xl p-4 shadow-md border border-cyan-500/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-cyan-500/20">
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-cyan-500/10">
+                  <BankOutlined className="text-lg text-cyan-400" />
+                  <h3 className="text-lg text-white font-medium">智能分类</h3>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-3 gap-4 p-3 bg-gray-900/40 rounded-lg border border-cyan-500/10">
+                    <div className="flex flex-col items-center gap-1 p-3 bg-cyan-500/10 rounded-lg transition-all duration-300 hover:bg-cyan-500/20 hover:-translate-y-1">
+                      <span className="text-xs text-gray-300 whitespace-nowrap">
+                        准确率
+                      </span>
+                      <span className="text-xl text-cyan-400 font-bold">
+                        {Math.round(metrics.accuracy * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 p-3 bg-cyan-500/10 rounded-lg transition-all duration-300 hover:bg-cyan-500/20 hover:-translate-y-1">
+                      <span className="text-xs text-gray-300 whitespace-nowrap">
+                        精确率
+                      </span>
+                      <span className="text-xl text-cyan-400 font-bold">
+                        {Math.round(metrics.precision * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 p-3 bg-cyan-500/10 rounded-lg transition-all duration-300 hover:bg-cyan-500/20 hover:-translate-y-1">
+                      <span className="text-xs text-gray-300 whitespace-nowrap">
+                        召回率
+                      </span>
+                      <span className="text-xl text-cyan-400 font-bold">
+                        {Math.round(metrics.recall * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full p-3 bg-gray-900/40 rounded-lg border border-cyan-500/10">
+                    <div ref={confusionMatrixRef} className="w-full h-48"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 右侧：流程图（垂直排列） */}
+            <div className="w-1/4 flex flex-col justify-center">
+              <div className="flex flex-col items-center gap-4 bg-gray-900/30 p-4 rounded-lg">
+                <div className="flow-item flex flex-col items-center p-3 rounded-lg bg-gray-800/40 border border-cyan-500/10 w-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-gray-800 text-cyan-400 border border-cyan-500/20">
+                    📊
+                  </div>
+                  <div className="text-xs text-gray-200 font-medium">
+                    原始数据
+                  </div>
+                </div>
+                <div className="text-xl text-cyan-400 opacity-60">↓</div>
+                <div className="flow-item flex flex-col items-center p-3 rounded-lg bg-gray-800/40 border border-cyan-500/10 w-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-gray-800 text-cyan-400 border border-cyan-500/20">
+                    🔍
+                  </div>
+                  <div className="text-xs text-gray-200 font-medium">
+                    数据预处理
+                  </div>
+                </div>
+                <div className="text-xl text-cyan-400 opacity-60">↓</div>
+                <div className="flow-item flex flex-col items-center p-3 rounded-lg bg-gray-800/40 border border-cyan-500/10 w-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-gray-800 text-cyan-400 border border-cyan-500/20">
+                    🧠
+                  </div>
+                  <div className="text-xs text-gray-200 font-medium">
+                    智能分类
+                  </div>
+                </div>
+                <div className="text-xl text-cyan-400 opacity-60">↓</div>
+                <div className="flow-item flex flex-col items-center p-3 rounded-lg bg-gray-800/40 border border-cyan-500/10 w-full">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-2 bg-gray-800 text-cyan-400 border border-cyan-500/20">
+                    📈
+                  </div>
+                  <div className="text-xs text-gray-200 font-medium">
+                    结果验证
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 分类结果展示部分 */}
+        <div className="bg-gray-800/50 p-6 rounded-2xl shadow-md backdrop-blur-md border border-cyan-500/10 relative">
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+          <h2 className="text-xl font-bold mb-4 text-cyan-400 flex items-center">
+            <PieChartOutlined className="mr-2" /> 分类结果
+          </h2>
+          <div className="grid grid-cols-7 gap-4 p-2">
+            {Object.keys(categoryStats).map((category) => (
+              <div
+                key={category}
+                className={`flex flex-col items-center p-3 bg-gray-800/60 rounded-xl shadow-md transition-all duration-300 hover:scale-105 border ${
+                  activeSource &&
+                  sourceToCategories[
+                    activeSource as keyof typeof sourceToCategories
+                  ]?.includes(category)
+                    ? "bg-cyan-500/20 border-cyan-400 opacity-100 scale-105 shadow-cyan-500/20"
+                    : "border-cyan-500/10 opacity-70"
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 border transition-all duration-300 ${
+                    activeSource &&
+                    sourceToCategories[
+                      activeSource as keyof typeof sourceToCategories
+                    ]?.includes(category)
+                      ? "bg-cyan-500 border-cyan-300 text-white"
+                      : "bg-gray-800 border-cyan-500/20 text-cyan-400"
+                  }`}
+                >
+                  {getCategoryIcon(category)}
+                </div>
+                <span className="text-xs text-center font-medium text-white mb-2 truncate w-full">
+                  {getResultCardLabel(category)}
+                </span>
+                <div className="w-full flex justify-between items-center p-2 bg-cyan-500/10 rounded-lg">
+                  <div className="flex items-center gap-1">
+                    {/* <NumberOutlined className="text-xs text-cyan-400" /> */}
+                    <span className="text-xs font-semibold text-white">
+                      {
+                        categoryStats[category as keyof typeof categoryStats]
+                          .count
+                      }
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {/* <PercentageOutlined className="text-xs text-cyan-400" /> */}
+                    <span className="text-xs font-semibold text-cyan-400">
+                      {Math.round(
+                        categoryStats[category as keyof typeof categoryStats]
+                          .confidence * 100
+                      )}
+                      %
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
+}
+
+// 数据源标签映射
+const getSourceLabel = (source: string) => {
+  const labels: Record<string, string> = {
+    law: "法规标准",
+    paper: "学术论文",
+    report: "调查报告",
+    policy: "政策文件",
+    book: "专业书籍",
+  }
+  return labels[source] || source
+}
+
+// 结果卡片标签映射
+const getResultCardLabel = (category: string) => {
+  const labels: Record<string, string> = {
+    robot: "工业机器人视觉",
+    agriculture: "农业与环境监测",
+    landslide: "地质勘探图像",
+    vision: "机器人视觉",
+    microscope: "微观结构图像",
+    satellite: "高分辨率遥感影像",
+    star: "天体观测图像",
+  }
+  return labels[category] || category
 }
 
 export default DataAnalysisModal

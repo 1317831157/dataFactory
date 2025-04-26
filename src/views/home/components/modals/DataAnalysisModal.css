@@ -1,0 +1,490 @@
+/* DataAnalysisModal 样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(16, 42, 66, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  color: #fff;
+  line-height: 1.6;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #4fd1c5;
+  font-size: 3rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #4fd1c5, transparent);
+  margin: 1rem auto 0;
+  border-radius: 2px;
+}
+
+.workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* 输入部分样式 */
+.input-section {
+  background: rgba(16, 42, 66, 0.5);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.input-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4fd1c5, transparent);
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background: rgba(16, 42, 66, 0.6);
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(79, 209, 197, 0.1),
+    transparent
+  );
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 16px rgba(79, 209, 197, 0.2);
+}
+
+.card:hover::before {
+  transform: translateX(100%);
+}
+
+.card.active {
+  background: rgba(79, 209, 197, 0.2);
+  border-color: #4fd1c5;
+  box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
+}
+
+.card i {
+  color: #4fd1c5;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.card.active i {
+  transform: scale(1.2) rotate(360deg);
+  color: #fff;
+}
+
+.card span {
+  font-size: 1.1rem;
+  text-align: center;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 处理流程部分样式 */
+.process-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  position: relative;
+  min-height: 300px;
+  background: rgba(16, 42, 66, 0.5);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.data-cleaning {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  padding: 2rem;
+}
+
+.cleaning-step {
+  background: rgba(16, 42, 66, 0.6);
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cleaning-step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(79, 209, 197, 0.2);
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.step-header i {
+  color: #4fd1c5;
+  font-size: 1.5rem;
+}
+
+.step-header h3 {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 数据流动画 */
+.data-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  gap: 2rem;
+  padding: 1rem;
+  background: rgba(16, 42, 66, 0.3);
+  border-radius: 15px;
+}
+
+.flow-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: rgba(16, 42, 66, 0.4);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.flow-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #4fd1c5;
+}
+
+.flow-text {
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.flow-arrow {
+  font-size: 2rem;
+  color: #4fd1c5;
+  opacity: 0.6;
+}
+
+.flow-item.active {
+  background: rgba(79, 209, 197, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
+}
+
+.flow-item.active .flow-icon {
+  color: #fff;
+  transform: scale(1.2);
+}
+
+.flow-item.active .flow-text {
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 输出结果部分样式 */
+.output-section {
+  background: rgba(16, 42, 66, 0.5);
+  padding: 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  position: relative;
+}
+
+.output-section::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4fd1c5, transparent);
+}
+
+.result-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background: rgba(16, 42, 66, 0.6);
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+.result-card:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.result-card.active {
+  opacity: 1;
+  transform: scale(1.1);
+  background: rgba(79, 209, 197, 0.2);
+  border-color: #4fd1c5;
+  box-shadow: 0 0 20px rgba(79, 209, 197, 0.3);
+}
+
+.result-card i {
+  color: #4fd1c5;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.result-card.active i {
+  transform: scale(1.2) rotate(360deg);
+  color: #fff;
+}
+
+.result-card span {
+  font-size: 1.1rem;
+  text-align: center;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* 数据预处理步骤样式 */
+.preprocessing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(16, 42, 66, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.preprocessing-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(79, 209, 197, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.preprocessing-step i {
+  color: #4fd1c5;
+  font-size: 1.2rem;
+}
+
+.preprocessing-step span {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.preprocessing-step.completed {
+  background: rgba(79, 209, 197, 0.2);
+}
+
+.preprocessing-step.completed i {
+  color: #fff;
+}
+
+/* 进度条样式 */
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(16, 42, 66, 0.4);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4fd1c5, #38b2ac);
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* 分类指标样式 */
+.classification-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  padding: 1rem;
+  background: rgba(16, 42, 66, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(79, 209, 197, 0.1);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.metric:hover {
+  background: rgba(79, 209, 197, 0.2);
+  transform: translateY(-2px);
+}
+
+.metric-label {
+  color: #fff;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.metric-value {
+  color: #4fd1c5;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* 分类结果卡片样式 */
+.category-stats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: rgba(79, 209, 197, 0.1);
+  border-radius: 4px;
+}
+
+.count {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.confidence {
+  color: #4fd1c5;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.classification-visualization {
+  width: 100%;
+  background: rgba(16, 42, 66, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(79, 209, 197, 0.1);
+  padding: 1rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .card,
+  .result-card {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .data-flow {
+    flex-direction: column;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+
+  .classification-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .category-stats {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
