@@ -1,0 +1,266 @@
+/* DataDisplayModal自定义样式 */
+
+/* 整体模态框样式 */
+.data-display-container {
+  background: linear-gradient(to bottom, #1a1f3c, #151934);
+  color: #fff;
+}
+
+/* 标题样式 */
+.academic-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* 选择器样式覆盖 */
+.custom-select .ant-select-selector {
+  background-color: rgba(30, 35, 67, 0.9) !important;
+  border-color: rgba(32, 128, 192, 0.7) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.3s ease;
+}
+
+.custom-select:hover .ant-select-selector {
+  border-color: rgba(32, 128, 192, 1) !important;
+  box-shadow: 0 2px 12px rgba(32, 128, 192, 0.3) !important;
+}
+
+.custom-select .ant-select-arrow {
+  color: rgba(32, 128, 192, 0.8) !important;
+}
+
+.custom-select .ant-select-selection-item {
+  color: rgba(205, 235, 255, 1) !important;
+  /* background-color: rgba(32, 128, 192, 0.5) !important; */
+  border-color: rgba(32, 128, 192, 0.8) !important;
+  border-radius: 4px !important;
+  margin: 2px !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.custom-select .ant-select-selection-placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 下拉框样式优化 */
+.custom-select .ant-select-dropdown {
+  background-color: rgba(26, 31, 60, 0.95) !important;
+  border: 1px solid rgba(32, 128, 192, 0.5) !important;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.custom-select .ant-select-item {
+  color: rgba(185, 225, 255, 0.9) !important;
+  transition: all 0.2s ease;
+  padding: 8px 12px !important;
+  border-radius: 2px !important;
+}
+
+.custom-select .ant-select-item:hover {
+  color: #ffffff !important;
+  text-shadow: 0 0 8px rgba(32, 128, 192, 0.5) !important;
+}
+
+.custom-select .ant-select-item-option-active {
+  background-color: rgba(32, 128, 192, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.custom-select .ant-select-item-option-selected {
+  background-color: rgba(32, 128, 192, 0.4) !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 优化下拉项内容文字颜色，确保可见 */
+.custom-select-dropdown .ant-select-item-option-content {
+  color: #aaa !important;
+}
+
+/* 日期选择器样式 */
+.custom-date-picker .ant-picker {
+  background-color: rgba(30, 35, 67, 0.8) !important;
+  border-color: rgba(32, 128, 192, 0.5) !important;
+}
+
+.custom-date-picker .ant-picker-input > input::placeholder {
+  color: rgba(205, 235, 255, 1); /* 设置颜色 */
+}
+.custom-date-picker .ant-picker-input > input {
+  color: rgba(205, 235, 255, 1) !important;
+}
+
+.custom-date-picker .ant-picker-suffix,
+.custom-date-picker .ant-picker-separator {
+  color: rgba(32, 128, 192, 0.8) !important;
+}
+
+/* 表格样式覆盖 */
+.custom-table .ant-table {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background-color: rgba(30, 35, 67, 0.9) !important;
+  color: rgba(32, 128, 192, 1) !important;
+  border-bottom: 1px solid rgba(32, 128, 192, 0.5) !important;
+  text-align: center !important;
+}
+
+.custom-table .ant-table-tbody > tr > td {
+  background-color: rgba(26, 31, 60, 0.5) !important;
+  border-bottom: 1px solid rgba(32, 128, 192, 0.2) !important;
+  color: #fff !important;
+  text-align: center !important;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background-color: rgba(32, 128, 192, 0.2) !important;
+}
+
+.custom-table .ant-empty-description {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.custom-table .ant-pagination-item,
+.custom-table .ant-pagination-prev,
+.custom-table .ant-pagination-next {
+  background-color: rgba(30, 35, 67, 0.8) !important;
+  border-color: rgba(32, 128, 192, 0.5) !important;
+}
+
+.custom-table .ant-pagination-item-active {
+  background-color: rgba(32, 128, 192, 0.8) !important;
+  border-color: rgba(32, 128, 192, 1) !important;
+}
+
+.custom-table .ant-pagination-item a {
+  color: #fff !important;
+}
+
+/* 按钮样式 */
+.data-button {
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.data-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 导出按钮区间距 */
+.export-section {
+  margin-top: 24px;
+}
+
+/* 指标卡片样式 */
+.metric-card {
+  background: linear-gradient(45deg, #1e2343, #232952);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* 图表容器样式 */
+.chart-container {
+  background: rgba(0, 21, 41, 0.6);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(32, 128, 192, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 日历弹窗整体背景与边框 */
+.custom-date-picker .ant-picker-panel {
+  background: rgba(26, 31, 60, 0.98) !important;
+  color: #fff !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(32, 128, 192, 0.5) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 日历头部（年月切换区） */
+.custom-date-picker .ant-picker-header {
+  background: transparent !important;
+  color: #fff !important;
+  border-bottom: 1px solid rgba(32, 128, 192, 0.2) !important;
+}
+
+/* 日历单元格（日期） */
+.custom-date-picker .ant-picker-cell {
+  color: #cdeaff !important;
+  background: transparent !important;
+  transition: background 0.2s;
+}
+
+/* 当前日期高亮 */
+.custom-date-picker .ant-picker-cell-today .ant-picker-cell-inner {
+  border: 1px solid rgba(32, 128, 192, 0.8) !important;
+  color: #20a0c0 !important;
+}
+
+/* 选中日期 */
+.custom-date-picker .ant-picker-cell-selected .ant-picker-cell-inner,
+.custom-date-picker .ant-picker-cell-range-start .ant-picker-cell-inner,
+.custom-date-picker .ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: linear-gradient(90deg, #2080c0 60%, #1a1f3c 100%) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+/* 范围内日期 */
+.custom-date-picker .ant-picker-cell-in-range .ant-picker-cell-inner {
+  background: rgba(32, 128, 192, 0.15) !important;
+  color: #fff !important;
+}
+
+/* 悬浮日期 */
+.custom-date-picker .ant-picker-cell:hover .ant-picker-cell-inner {
+  background: rgba(32, 128, 192, 0.25) !important;
+  color: #fff !important;
+}
+
+/* 禁用日期 */
+.custom-date-picker .ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: #555 !important;
+  background: transparent !important;
+}
+
+/* 周几标题 */
+.custom-date-picker .ant-picker-content th {
+  color: #20a0c0 !important;
+  font-weight: 500 !important;
+}
+
+/* 输入框 placeholder */
+.custom-date-picker .ant-picker-input > input::placeholder {
+  color: #cdeaff !important;
+  opacity: 0.7;
+}
+
+/* 输入框文字 */
+.custom-date-picker .ant-picker-input > input {
+  color: #fff !important;
+}
+
+/* icon颜色 */
+.custom-date-picker .ant-picker-suffix,
+.custom-date-picker .ant-picker-clear {
+  color: #20a0c0 !important;
+}
