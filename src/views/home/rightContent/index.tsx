@@ -3,7 +3,6 @@ import EChart from "../../../components/EChart"
 import type { EChartsOption } from "echarts"
 import * as echarts from "echarts"
 import { analysisApi } from "@/api/index"
-
 /**
  * 右侧内容组件
  * 展示访问数据统计和图表
