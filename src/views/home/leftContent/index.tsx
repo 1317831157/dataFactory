@@ -323,7 +323,7 @@ const LeftContent: React.FC = () => {
             <Spin size="large" tip="正在加载资源数据..." />
           </div>
         ) : (
-          resourceList.map((item) => (
+          resourceList?.map((item) => (
             <div key={item.id} className="relative group mb-4 px-4">
               {/* 卡片背景 - 渐变效果 */}
               <div className="absolute inset-0 bg-gradient-to-r from-[rgba(24,144,255,0.1)] to-transparent rounded-md opacity-70 group-hover:opacity-90 transition-opacity"></div>
