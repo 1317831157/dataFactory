@@ -1,69 +1,19 @@
-import React, { useState, useEffect, useCallback, useRef } from "react"
-import { Empty } from "antd"
-import * as echarts from "echarts"
+import React, { useState, useEffect, useCallback } from "react"
+import { Empty, message } from "antd"
 import EChart from "../../../../components/EChart"
 import { EChartsOption } from "echarts"
+import { dataProcessingModalApi } from "../../../../api/dataProcessingModal"
 
 interface DataProcessingModalProps {
   themeColor?: string
   secondaryColor?: string
 }
 
-// 论文来源列表
-const sources = [
-  "arXiv",
-  "IEEE Xplore",
-  "ScienceDirect",
-  "Springer",
-  "ACM Digital Library",
-]
-
-// 论文主题标签
-const topics = [
-  "机器学习",
-  "深度学习",
-  "计算机视觉",
-  "自然语言处理",
-  "数据挖掘",
-  "人工智能",
-  "神经网络",
-  "强化学习",
-]
-
-// 数据接口定义
-interface PaperData {
-  title: string
-  abstract: string
-  source: string
-  authors: string[]
-  timestamp: string
-  wordCount: number
-  imageCount: number
-  formulaCount: number
-  topics: string[]
-  type: "valid"
-  size: number
-  image?: string
-}
-
-interface FormulaData {
-  title: string
-  paperTitle: string
-  image: string
-  timestamp: string
-  type: "formula"
-  size: number
-}
-
-interface TrashData {
-  title: string
-  content: string
-  timestamp: string
-  type: "trash"
-  reason: string
-}
-
-type DataItem = PaperData | FormulaData | TrashData
+// 使用API中定义的类型
+type PaperData = API.DataProcessing.PaperData
+type FormulaData = API.DataProcessing.FormulaData
+type TrashData = API.DataProcessing.TrashData
+type DataItem = API.DataProcessing.DataItem
 
 const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
   themeColor = "#ffaa00",
@@ -78,23 +28,108 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
   const [processSpeed, setProcessSpeed] = useState<number>(0)
   const [totalCount, setTotalCount] = useState<number>(0)
   const [chartData, setChartData] = useState<number[]>(Array(24).fill(0))
-  const chartInstanceRef = useRef<echarts.ECharts | null>(null)
-  const chartContainerRef = useRef<HTMLDivElement>(null)
 
-  // CSS变量
-  const cssVars = {
-    "--bg-primary": "#0d1117",
-    "--bg-secondary": "#161b22",
-    "--text-primary": "#c9d1d9",
-    "--text-secondary": "#8b949e",
-    "--accent-blue": "#58a6ff",
-    "--accent-green": "#3fb950",
-    "--accent-red": "#f85149",
-    "--border-color": "#30363d",
-    "--shadow-sm": "0 1px 2px 0 rgba(0, 0, 0, 0.5)",
-    "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.5)",
-    "--gradient-blue": "linear-gradient(135deg, #0d1117, #161b22)",
-  } as React.CSSProperties
+  // 加载状态
+  const [statsLoading, setStatsLoading] = useState<boolean>(false)
+  const [papersLoading, setPapersLoading] = useState<boolean>(false)
+  const [formulasLoading, setFormulasLoading] = useState<boolean>(false)
+  const [trashLoading, setTrashLoading] = useState<boolean>(false)
+
+  // API调用函数
+  const fetchRealTimeStats = useCallback(async () => {
+    try {
+      setStatsLoading(true)
+      const response = await dataProcessingModalApi.getRealTimeStats()
+      const stats = response.data
+      setProcessSpeed(stats.processSpeed)
+      setTotalCount(stats.totalCount)
+    } catch (error) {
+      console.error("获取实时统计数据失败:", error)
+      message.error("获取实时统计数据失败")
+    } finally {
+      setStatsLoading(false)
+    }
+  }, [])
+
+  const fetchTrendData = useCallback(async () => {
+    try {
+      const response = await dataProcessingModalApi.getTrendData()
+      const trendData = response.data
+      setChartData(trendData.hourlyData)
+    } catch (error) {
+      console.error("获取趋势数据失败:", error)
+      message.error("获取趋势数据失败")
+    }
+  }, [])
+
+  const fetchValidPapers = useCallback(
+    async (page: number = 1, pageSize: number = 10) => {
+      try {
+        setPapersLoading(true)
+        const response = await dataProcessingModalApi.getValidPapers({
+          page,
+          pageSize,
+          sortBy: "timestamp",
+          sortOrder: "desc",
+        })
+        const papers = response.data
+        setValidPapers(papers.data)
+      } catch (error) {
+        console.error("获取有效论文列表失败:", error)
+        message.error("获取有效论文列表失败")
+      } finally {
+        setPapersLoading(false)
+      }
+    },
+    []
+  )
+
+  const fetchFormulaImages = useCallback(
+    async (page: number = 1, pageSize: number = 20) => {
+      try {
+        setFormulasLoading(true)
+        const response = await dataProcessingModalApi.getFormulaImages({
+          page,
+          pageSize,
+          type: "formula",
+        })
+        const formulas = response.data
+        setFormulaImages(formulas.data)
+      } catch (error) {
+        console.error("获取公式图片列表失败:", error)
+        message.error("获取公式图片列表失败")
+      } finally {
+        setFormulasLoading(false)
+      }
+    },
+    []
+  )
+
+  const fetchTrashData = useCallback(
+    async (page: number = 1, pageSize: number = 10) => {
+      try {
+        setTrashLoading(true)
+        const response = await dataProcessingModalApi.getTrashData({
+          page,
+          pageSize,
+          type: "trash",
+        })
+        const trashData = response.data
+        setTrashData(trashData.data)
+        setTrashPagination({
+          page: trashData.page,
+          pageSize: trashData.pageSize,
+          total: trashData.total,
+        })
+      } catch (error) {
+        console.error("获取垃圾数据列表失败:", error)
+        message.error("获取垃圾数据列表失败")
+      } finally {
+        setTrashLoading(false)
+      }
+    },
+    []
+  )
 
   // 渐变色生成函数
   const createGradient = (
@@ -103,7 +138,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
     opacity2: number = 0.1
   ) => {
     return {
-      type: "linear",
+      type: "linear" as const,
       x: 0,
       y: 0,
       x2: 0,
@@ -112,13 +147,17 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
         {
           offset: 0,
           color: color
-            ? `${color}${Math.floor(opacity1 * 255).toString(16)}`
+            ? `${color}${Math.floor(opacity1 * 255)
+                .toString(16)
+                .padStart(2, "0")}`
             : "rgba(24, 144, 255, 0.7)", // 顶部颜色
         },
         {
           offset: 1,
           color: color
-            ? `${color}${Math.floor(opacity2 * 255).toString(16)}`
+            ? `${color}${Math.floor(opacity2 * 255)
+                .toString(16)
+                .padStart(2, "0")}`
             : "rgba(24, 144, 255, 0.1)", // 底部颜色
         },
       ],
@@ -199,146 +238,77 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
     }
   }, [themeColor, secondaryColor, chartData])
 
-  // 模拟数据生成函数
-  const generateMockPaper = useCallback(() => {
-    const wordCount = Math.floor(Math.random() * 5000) + 2000
-    const imageCount = Math.floor(Math.random() * 10) + 1
-    const formulaCount = Math.floor(Math.random() * 15) + 1
-    const size = Math.floor(Math.random() * 1000) + 500
-
-    // 随机选择2-4个主题标签
-    const paperTopics = [...topics]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, Math.floor(Math.random() * 3) + 2)
-
-    return {
-      title: `基于深度学习的${
-        topics[Math.floor(Math.random() * topics.length)]
-      }研究`,
-      abstract:
-        "本文提出了一种新的方法来解决在实际应用中常见的问题。通过实验证明，该方法在多个数据集上都取得了良好的效果。实验结果表明，与现有方法相比，本文提出的方法在准确率和效率上都有显著提升。",
-      content: "模拟论文内容".repeat(100),
-      source: sources[Math.floor(Math.random() * sources.length)],
-      authors: ["作者A", "作者B", "作者C"],
-      wordCount,
-      imageCount,
-      formulaCount,
-      topics: paperTopics,
-      size,
-      image:
-        Math.random() > 0.5
-          ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
-          : undefined,
-    }
-  }, [])
-
-  // 判断数据分类的工具函数
-  const isValidPaper = useCallback((data: any): boolean => {
-    // 判断是否为有效论文
-    return data.content && data.content.length > 100 && !isTrash(data)
-  }, [])
-
-  const hasFormulaImage = useCallback((data: any): boolean => {
-    // 判断是否包含公式图片
-    return data.image && data.image.includes("formula")
-  }, [])
-
-  const isTrash = useCallback((data: any): boolean => {
-    // 判断是否为垃圾数据
-    return !data.content || data.content.length < 100
-  }, [])
-
-  const getTrashReason = useCallback((data: any): string => {
-    if (!data.content) return "空内容"
-    if (data.content.length < 100) return "内容过短"
-    return "无效数据"
-  }, [])
-
-  // 处理数据的函数
-  const processData = useCallback(
-    (data: any) => {
-      if (isValidPaper(data)) {
-        setValidPapers((prev) => [
-          ...prev,
-          {
-            title: data.title,
-            abstract: data.abstract,
-            source: data.source,
-            authors: data.authors,
-            timestamp: new Date().toLocaleString(),
-            wordCount: data.wordCount,
-            imageCount: data.imageCount,
-            formulaCount: data.formulaCount,
-            topics: data.topics,
-            type: "valid",
-            size: data.size,
-          },
-        ])
-      } else if (hasFormulaImage(data)) {
-        setFormulaImages((prev) => [
-          ...prev,
-          {
-            title: `公式图片 ${prev.length + 1}`,
-            paperTitle: data.title,
-            image: data.image,
-            timestamp: new Date().toLocaleString(),
-            type: "formula",
-            size: data.size,
-          },
-        ])
-      } else {
-        setTrashData((prev) => [
-          ...prev,
-          {
-            title: data.title,
-            content: data.content,
-            timestamp: new Date().toLocaleString(),
-            type: "trash",
-            reason: getTrashReason(data),
-          },
-        ])
-      }
-    },
-    [isValidPaper, hasFormulaImage, getTrashReason]
-  )
-
   // 清空垃圾箱
-  const clearTrash = useCallback(() => {
+  const clearTrash = useCallback(async () => {
     if (window.confirm("确定要清空垃圾箱吗？此操作不可恢复。")) {
-      setTrashData([])
+      try {
+        setTrashLoading(true)
+        const response = await dataProcessingModalApi.clearTrash()
+        if (response.data.success) {
+          setTrashData([])
+          setTrashPagination((prev) => ({ ...prev, total: 0 }))
+          message.success("垃圾箱已清空")
+        } else {
+          message.error(response.data.message || "清空垃圾箱失败")
+        }
+      } catch (error) {
+        console.error("清空垃圾箱失败:", error)
+        message.error("清空垃圾箱失败")
+      } finally {
+        setTrashLoading(false)
+      }
     }
   }, [])
 
-  // 模拟数据更新
+  // 下载论文
+  const handleDownloadPaper = useCallback(async (paperId: string) => {
+    try {
+      await dataProcessingModalApi.downloadPaper(paperId, "pdf")
+      message.success("论文下载成功")
+    } catch (error) {
+      console.error("论文下载失败:", error)
+      message.error("论文下载失败")
+    }
+  }, [])
+
+  // 初始化数据
   useEffect(() => {
-    const updateStats = () => {
-      // 更新处理速度
-      const speed = Math.floor(Math.random() * 5)
-      setProcessSpeed(speed)
-
-      // 更新总数据量
-      setTotalCount((prev) => prev + speed)
-
-      // 更新图表数据
-      const currentHour = new Date().getHours()
-      setChartData((prevData) => {
-        const newData = [...prevData]
-        newData[currentHour] += speed
-        return newData
-      })
-
-      if (speed > 0) {
-        for (let i = 0; i < speed; i++) {
-          processData(generateMockPaper())
-        }
+    const initializeData = async () => {
+      try {
+        // 并行获取初始数据
+        await Promise.all([
+          fetchRealTimeStats(),
+          fetchTrendData(),
+          fetchValidPapers(1, 10),
+          fetchFormulaImages(1, 20),
+          fetchTrashData(1, 10),
+        ])
+      } catch (error) {
+        console.error("初始化数据失败:", error)
       }
     }
 
-    // 启动定时更新
-    const intervalId = setInterval(updateStats, 1000)
+    initializeData()
+  }, [
+    fetchRealTimeStats,
+    fetchTrendData,
+    fetchValidPapers,
+    fetchFormulaImages,
+    fetchTrashData,
+  ])
+
+  // 定时更新实时数据
+  useEffect(() => {
+    const updateRealTimeData = () => {
+      fetchRealTimeStats()
+      fetchTrendData()
+    }
+
+    // 每5秒更新一次实时数据
+    const intervalId = setInterval(updateRealTimeData, 5000)
 
     return () => clearInterval(intervalId)
-  }, [processData, generateMockPaper])
+  }, [fetchRealTimeStats, fetchTrendData])
 
   // 过滤显示结果
   const filteredResults = useCallback(() => {
@@ -575,7 +545,12 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
                           >
                             查看
                           </button>
-                          <button className="flex-1 px-2 py-1 bg-[rgba(32,128,192,0.4)] text-white text-xs rounded hover:bg-[rgba(32,128,192,0.6)]">
+                          <button
+                            className="flex-1 px-2 py-1 bg-[rgba(32,128,192,0.4)] text-white text-xs rounded hover:bg-[rgba(32,128,192,0.6)]"
+                            onClick={() =>
+                              paper.id && handleDownloadPaper(paper.id)
+                            }
+                          >
                             下载
                           </button>
                         </div>
@@ -810,7 +785,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from {
             opacity: 0;

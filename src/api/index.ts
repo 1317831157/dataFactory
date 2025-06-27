@@ -4,6 +4,16 @@ import request from "../utils/request"
  * API接口封装
  */
 
+// 导入各模块的API
+export {
+  dataCollectionApi,
+  dataProcessingApi,
+  dataDisplayApi,
+  dataAnalysisApi,
+} from "./dataCollectModal"
+export { dataProcessingModalApi } from "./dataProcessingModal"
+export { dataAnalysisModalApi } from "./dataAnalysisModal"
+
 export const analysisApi = {
   // 获取分析数据，添加重试逻辑
   getFileData: async (params?: any) => {

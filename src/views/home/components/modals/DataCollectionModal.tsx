@@ -486,7 +486,10 @@ const DataCollectionModal: React.FC<DataCollectionModalProps> = ({
 
       console.log("获取结果成功:", response?.data?.results?.length || 0)
       if (response && response.data && response.data.results) {
-        setResults(response.data.results)
+        const res = response.data.results.find(
+          (item) => item.title === selectedSource
+        )?.files
+        setResults(res)
       }
     } catch (error) {
       console.error("获取爬取结果失败:", error)
@@ -506,15 +509,15 @@ const DataCollectionModal: React.FC<DataCollectionModalProps> = ({
     updateTrendData()
 
     // 更新左侧各类型数据统计
-    if (selectedSource) {
-      setCounts((prev) => {
-        // 创建新的统计对象
-        const newCounts = { ...prev }
-        // 更新选中的数据源
-        newCounts[selectedSource as keyof typeof newCounts] += speedIncrement
-        return newCounts
-      })
-    }
+    // if (selectedSource) {
+    //   setCounts((prev) => {
+    //     // 创建新的统计对象
+    //     const newCounts = { ...prev }
+    //     // 更新选中的数据源
+    //     newCounts[selectedSource as keyof typeof newCounts] += speedIncrement
+    //     return newCounts
+    //   })
+    // }
   }
 
   // 更新趋势图表数据
@@ -805,10 +808,10 @@ const DataCollectionModal: React.FC<DataCollectionModalProps> = ({
                       marginBottom: "8px",
                     }}
                   >
-                    <div className="font-medium">{result.title}</div>
+                    <div className="font-medium">{result.name}</div>
                     <div className="text-xs opacity-70 flex justify-between mt-1">
-                      <span>{result.source}</span>
-                      <span>{result.time}</span>
+                      <span>{result.path}</span>
+                      <span>{result.modified}</span>
                     </div>
                   </div>
                 ))

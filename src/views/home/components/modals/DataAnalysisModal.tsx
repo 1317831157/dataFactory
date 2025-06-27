@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
+import { message } from "antd"
 import * as echarts from "echarts"
 import {
   BookOutlined,
@@ -20,6 +21,7 @@ import {
   NumberOutlined,
   PercentageOutlined,
 } from "@ant-design/icons"
+import { dataAnalysisModalApi } from "../../../../api/dataAnalysisModal"
 
 // 定义组件的props类型
 interface DataAnalysisModalProps {
@@ -29,16 +31,28 @@ interface DataAnalysisModalProps {
 
 const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
   // 数据源到目标的映射关系
-  const sourceToCategories = {
+  const [sourceToCategories, setSourceToCategories] = useState<
+    Record<string, string[]>
+  >({
     law: ["robot", "vision"],
     paper: ["microscope", "satellite"],
     report: ["agriculture", "landslide"],
     policy: ["robot", "agriculture"],
     book: ["star", "satellite"],
-  }
+  })
 
   // 分类结果统计状态
-  const [categoryStats, setCategoryStats] = useState({
+  const [categoryStats, setCategoryStats] = useState<
+    Record<
+      string,
+      {
+        count: number
+        confidence: number
+        percentage?: number
+        samples?: number
+      }
+    >
+  >({
     robot: { count: 0, confidence: 0 },
     agriculture: { count: 0, confidence: 0 },
     landslide: { count: 0, confidence: 0 },
@@ -62,9 +76,141 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
     recall: 0,
   })
 
+  // 任务状态
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // 加载状态
+  const [loading, setLoading] = useState(false)
+  const [keywordExtractionLoading, setKeywordExtractionLoading] =
+    useState(false)
+  const [preprocessingLoading, setPreprocessingLoading] = useState(false)
+  const [classificationLoading, setClassificationLoading] = useState(false)
+
   // Refs
   const confusionMatrixRef = useRef<HTMLDivElement>(null)
   const flowIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const keywordIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const preprocessIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const classificationIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // API调用函数
+  const fetchSourceCategoryMapping = useCallback(async () => {
+    try {
+      const response = await dataAnalysisModalApi.getSourceCategoryMapping()
+      setSourceToCategories(response.data)
+    } catch (error) {
+      console.error("获取数据源分类映射失败:", error)
+      message.error("获取数据源分类映射失败")
+    }
+  }, [])
+
+  const startKeywordExtraction = useCallback(async (sourceType: string) => {
+    try {
+      setKeywordExtractionLoading(true)
+      const response = await dataAnalysisModalApi.startKeywordExtraction({
+        sourceType,
+        sampleSize: 1000,
+      })
+
+      const taskId = response.data.taskId
+      setCurrentTaskId(taskId)
+
+      // 开始轮询进度
+      return await pollKeywordExtractionProgress(taskId)
+    } catch (error) {
+      console.error("启动关键词提取失败:", error)
+      message.error("启动关键词提取失败")
+      throw error
+    } finally {
+      setKeywordExtractionLoading(false)
+    }
+  }, [])
+
+  const pollKeywordExtractionProgress = useCallback(async (taskId: string) => {
+    return new Promise((resolve, reject) => {
+      const pollInterval = setInterval(async () => {
+        try {
+          const response =
+            await dataAnalysisModalApi.getKeywordExtractionProgress(taskId)
+          const result = response.data
+
+          // 更新进度显示
+          setPreprocessProgress(result.progress)
+
+          if (result.progress >= 100) {
+            clearInterval(pollInterval)
+            resolve(result)
+          }
+        } catch (error) {
+          clearInterval(pollInterval)
+          reject(error)
+        }
+      }, 500) // 每500ms检查一次进度
+
+      keywordIntervalRef.current = pollInterval
+    })
+  }, [])
+
+  const startPreprocessing = useCallback(async (sourceType: string) => {
+    try {
+      setPreprocessingLoading(true)
+      const response = await dataAnalysisModalApi.startPreprocessing({
+        sourceType,
+        steps: ["数据清洗", "格式标准化", "特征提取"],
+        parameters: {
+          cleaningThreshold: 0.8,
+          standardFormat: "json",
+          featureCount: 100,
+        },
+      })
+
+      const taskId = response.data.taskId
+      setCurrentTaskId(taskId)
+
+      return await pollPreprocessingProgress(taskId)
+    } catch (error) {
+      console.error("启动数据预处理失败:", error)
+      message.error("启动数据预处理失败")
+      throw error
+    } finally {
+      setPreprocessingLoading(false)
+    }
+  }, [])
+
+  const pollPreprocessingProgress = useCallback(async (taskId: string) => {
+    return new Promise((resolve, reject) => {
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await dataAnalysisModalApi.getPreprocessingProgress(
+            taskId
+          )
+          const result = response.data
+
+          // 更新预处理步骤显示
+          setPreprocessProgress(result.progress)
+          setPreprocessSteps(
+            result.steps
+              .filter((step) => step.status === "completed")
+              .map((step) => step.name)
+          )
+
+          if (result.status === "completed") {
+            clearInterval(pollInterval)
+            resolve(result)
+          } else if (result.status === "failed") {
+            clearInterval(pollInterval)
+            reject(new Error("预处理失败"))
+          }
+        } catch (error) {
+          clearInterval(pollInterval)
+          reject(error)
+        }
+      }, 1000) // 每1秒检查一次进度
+
+      preprocessIntervalRef.current = pollInterval
+    })
+  }, [])
 
   // 获取类别图标
   const getCategoryIcon = (category: string) => {
@@ -80,6 +226,90 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
     return icons[category]
   }
 
+  const startClassification = useCallback(async (sourceType: string) => {
+    try {
+      setClassificationLoading(true)
+      const response = await dataAnalysisModalApi.startClassification({
+        sourceType,
+        parameters: {
+          batchSize: 32,
+          threshold: 0.8,
+          enablePreprocessing: false, // 已经预处理过了
+        },
+      })
+
+      const taskId = response.data.taskId
+      setCurrentTaskId(taskId)
+
+      return await pollClassificationProgress(taskId)
+    } catch (error) {
+      console.error("启动智能分类失败:", error)
+      message.error("启动智能分类失败")
+      throw error
+    } finally {
+      setClassificationLoading(false)
+    }
+  }, [])
+
+  const pollClassificationProgress = useCallback(async (taskId: string) => {
+    return new Promise((resolve, reject) => {
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await dataAnalysisModalApi.getClassificationProgress(
+            taskId
+          )
+          const task = response.data
+
+          // 更新分类进度
+          setIsProcessing(task.status === "classifying")
+
+          if (task.metrics) {
+            // 更新分类指标
+            setMetrics({
+              accuracy: task.metrics.accuracy,
+              precision: task.metrics.precision,
+              recall: task.metrics.recall,
+            })
+          }
+
+          if (task.status === "completed") {
+            clearInterval(pollInterval)
+            resolve(task)
+          } else if (task.status === "failed") {
+            clearInterval(pollInterval)
+            reject(new Error(task.error || "分类失败"))
+          }
+        } catch (error) {
+          clearInterval(pollInterval)
+          reject(error)
+        }
+      }, 100) // 每100ms检查一次进度，实现平滑的指标更新
+
+      classificationIntervalRef.current = pollInterval
+    })
+  }, [])
+
+  const fetchCategoryStats = useCallback(async (taskId: string) => {
+    try {
+      const response = await dataAnalysisModalApi.getCategoryStats(taskId)
+      setCategoryStats(response.data)
+    } catch (error) {
+      console.error("获取分类结果统计失败:", error)
+      message.error("获取分类结果统计失败")
+    }
+  }, [])
+
+  const fetchConfusionMatrixData = useCallback(async (taskId: string) => {
+    try {
+      const response = await dataAnalysisModalApi.getConfusionMatrixData(taskId)
+      return response.data
+    } catch (error) {
+      console.error("获取混淆矩阵数据失败:", error)
+      message.error("获取混淆矩阵数据失败")
+      throw error
+    }
+  }, [])
+
   // 初始化数据流动画
   useEffect(() => {
     const flowItems = document.querySelectorAll(".flow-item")
@@ -87,7 +317,9 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
 
     const highlightNext = () => {
       flowItems.forEach((item) => item.classList.remove("active"))
-      flowItems[currentIndex].classList.add("active")
+      if (flowItems[currentIndex]) {
+        flowItems[currentIndex].classList.add("active")
+      }
       currentIndex = (currentIndex + 1) % flowItems.length
     }
 
@@ -101,170 +333,91 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
     }
   }, [])
 
-  // 关键词提取动画
-  const initKeywordExtraction = () => {
-    const keywords = [
-      "机器学习",
-      "深度学习",
-      "神经网络",
-      "数据挖掘",
-      "自然语言处理",
-      "计算机视觉",
-      "图像识别",
-      "模式识别",
-      "特征提取",
-      "分类算法",
-      "回归分析",
-      "聚类分析",
-    ]
-
-    setPreprocessSteps([])
-    let extractedKeywords: string[] = []
-    let progress = 0
-
-    const extractInterval = setInterval(() => {
-      if (extractedKeywords.length < keywords.length) {
-        extractedKeywords = [
-          ...extractedKeywords,
-          keywords[extractedKeywords.length],
-        ]
-        progress = (extractedKeywords.length / keywords.length) * 100
-        setPreprocessProgress(progress)
-      } else {
-        clearInterval(extractInterval)
-        initPreprocessing()
-      }
-    }, 500)
-
-    return () => clearInterval(extractInterval)
-  }
-
-  // 预处理步骤动画
-  const initPreprocessing = () => {
-    const steps = ["数据清洗", "格式标准化", "特征提取"]
-    let currentStep = 0
-
-    const processNextStep = () => {
-      if (currentStep < steps.length) {
-        setPreprocessSteps((prev) => [...prev, steps[currentStep]])
-        currentStep++
-        setTimeout(processNextStep, 1000)
-      } else {
-        initClassification()
+  // 初始化组件数据
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        setLoading(true)
+        await fetchSourceCategoryMapping()
+      } catch (error) {
+        console.error("初始化数据失败:", error)
+      } finally {
+        setLoading(false)
       }
     }
 
-    processNextStep()
-  }
+    initializeData()
+  }, [fetchSourceCategoryMapping])
 
-  // 分类初始化
-  const initClassification = () => {
-    // 更新分类指标
-    const updateMetricsInterval = setInterval(() => {
-      setMetrics((prev) => {
-        if (prev.accuracy < 0.95) {
-          return {
-            accuracy: prev.accuracy + 0.01,
-            precision: prev.precision + 0.01,
-            recall: prev.recall + 0.01,
-          }
-        } else {
-          clearInterval(updateMetricsInterval)
-          return prev
-        }
-      })
-    }, 100)
+  // 创建混淆矩阵图表
+  const createConfusionMatrixChart = useCallback(
+    (matrixData: API.DataAnalysis.ConfusionMatrixData) => {
+      if (!confusionMatrixRef.current) return
 
-    // 创建混淆矩阵图表
-    if (confusionMatrixRef.current) {
       const chart = echarts.init(confusionMatrixRef.current)
 
-      const categories = [
-        "robot",
-        "agriculture",
-        "landslide",
-        "vision",
-        "microscope",
-        "satellite",
-        "star",
-      ]
-      const data: [number, number, number][] = []
-
-      categories.forEach((source, i) => {
-        categories.forEach((target, j) => {
-          // 对角线上的值较大，表示分类正确的比例高
-          const value =
-            i === j
-              ? Math.floor(Math.random() * 5) + 5
-              : Math.floor(Math.random() * 3)
-          data.push([i, j, value])
-        })
-      })
-
       const option = {
+        title: {
+          text: "混淆矩阵",
+          left: "center",
+          textStyle: {
+            color: "#c9d1d9",
+            fontSize: 16,
+          },
+        },
         tooltip: {
           position: "top",
+          formatter: function (params: any) {
+            return `实际: ${matrixData.categories[params.data[1]]}<br/>预测: ${
+              matrixData.categories[params.data[0]]
+            }<br/>数量: ${params.data[2]}`
+          },
         },
         grid: {
-          left: "3%",
-          right: "7%",
-          bottom: "7%",
-          top: "7%",
-          containLabel: true,
+          height: "50%",
+          top: "10%",
         },
         xAxis: {
           type: "category",
-          data: categories.map((cat) => cat.substring(0, 3)),
+          data: matrixData.categories,
           splitArea: {
             show: true,
           },
           axisLabel: {
-            color: "#fff",
+            color: "#c9d1d9",
           },
         },
         yAxis: {
           type: "category",
-          data: categories.map((cat) => cat.substring(0, 3)),
+          data: matrixData.categories,
           splitArea: {
             show: true,
           },
           axisLabel: {
-            color: "#fff",
+            color: "#c9d1d9",
           },
         },
         visualMap: {
           min: 0,
-          max: 10,
+          max: Math.max(...matrixData.matrix.flat()),
           calculable: true,
           orient: "horizontal",
           left: "center",
-          bottom: "0%",
+          bottom: "15%",
           textStyle: {
-            color: "#fff",
-          },
-          inRange: {
-            color: [
-              "#313695",
-              "#4575b4",
-              "#74add1",
-              "#abd9e9",
-              "#e0f3f8",
-              "#ffffbf",
-              "#fee090",
-              "#fdae61",
-              "#f46d43",
-              "#d73027",
-              "#a50026",
-            ],
+            color: "#c9d1d9",
           },
         },
         series: [
           {
-            name: "分类结果",
+            name: "混淆矩阵",
             type: "heatmap",
-            data: data,
+            data: matrixData.matrix.flatMap((row, i) =>
+              row.map((value, j) => [j, i, value])
+            ),
             label: {
               show: true,
+              color: "#c9d1d9",
             },
             emphasis: {
               itemStyle: {
@@ -278,94 +431,108 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
 
       chart.setOption(option)
 
-      // 窗口大小变化时重新调整图表大小
-      window.addEventListener("resize", () => {
-        chart.resize()
-      })
-    }
+      // 响应式处理
+      const handleResize = () => chart.resize()
+      window.addEventListener("resize", handleResize)
 
-    // 更新分类结果
-    updateCategoryStats()
-  }
+      return () => {
+        window.removeEventListener("resize", handleResize)
+        chart.dispose()
+      }
+    },
+    []
+  )
 
-  // 更新分类结果
-  const updateCategoryStats = () => {
-    if (!activeSource) return
+  // 处理卡片点击事件 - 完整的数据分析流程
+  const handleCardClick = useCallback(
+    async (source: string) => {
+      try {
+        console.log("开始分析数据源:", source)
 
-    const categories = Object.keys(categoryStats)
-    let currentIndex = 0
-
-    function updateNextCategory() {
-      if (currentIndex < categories.length) {
-        const category = categories[currentIndex]
-
-        setCategoryStats((prev) => {
-          const newStats = { ...prev }
-
-          // 如果是活动数据源映射的类别，增加更多计数和置信度
-          if (
-            sourceToCategories[
-              activeSource as keyof typeof sourceToCategories
-            ]?.includes(category)
-          ) {
-            newStats[category as keyof typeof categoryStats] = {
-              count:
-                prev[category as keyof typeof categoryStats].count +
-                Math.floor(Math.random() * 5) +
-                5,
-              confidence: Math.min(
-                0.95,
-                prev[category as keyof typeof categoryStats].confidence + 0.1
-              ),
-            }
-          } else {
-            // 其他类别增加少量计数
-            newStats[category as keyof typeof categoryStats] = {
-              count:
-                prev[category as keyof typeof categoryStats].count +
-                Math.floor(Math.random() * 2),
-              confidence: Math.min(
-                0.4,
-                prev[category as keyof typeof categoryStats].confidence + 0.02
-              ),
-            }
-          }
-
-          return newStats
+        // 重置所有状态
+        setCategoryStats({
+          robot: { count: 0, confidence: 0 },
+          agriculture: { count: 0, confidence: 0 },
+          landslide: { count: 0, confidence: 0 },
+          vision: { count: 0, confidence: 0 },
+          microscope: { count: 0, confidence: 0 },
+          satellite: { count: 0, confidence: 0 },
+          star: { count: 0, confidence: 0 },
         })
+        setActiveSource(source)
+        setPreprocessProgress(0)
+        setPreprocessSteps([])
+        setMetrics({
+          accuracy: 0,
+          precision: 0,
+          recall: 0,
+        })
+        setIsProcessing(true)
 
-        currentIndex++
-        setTimeout(updateNextCategory, 500)
+        // 1. 开始关键词提取
+        const keywordResult = await startKeywordExtraction(source)
+        console.log("关键词提取完成:", keywordResult)
+
+        // 2. 开始数据预处理
+        const preprocessResult = await startPreprocessing(source)
+        console.log("数据预处理完成:", preprocessResult)
+
+        // 3. 开始智能分类
+        const classificationResult = await startClassification(source)
+        console.log("智能分类完成:", classificationResult)
+
+        // 4. 获取最终结果
+        if (currentTaskId) {
+          const [confusionMatrix] = await Promise.all([
+            fetchConfusionMatrixData(currentTaskId),
+            fetchCategoryStats(currentTaskId),
+          ])
+
+          // 5. 创建混淆矩阵图表
+          if (confusionMatrixRef.current && confusionMatrix) {
+            createConfusionMatrixChart(confusionMatrix)
+          }
+        }
+
+        setIsProcessing(false)
+        message.success("数据分析完成")
+
+        return {
+          taskId: currentTaskId,
+          metrics: classificationResult.metrics,
+        }
+      } catch (error) {
+        console.error("数据分析流程失败:", error)
+        setIsProcessing(false)
+        message.error("数据分析失败，请重试")
+      }
+    },
+    [
+      startKeywordExtraction,
+      startPreprocessing,
+      startClassification,
+      fetchConfusionMatrixData,
+      fetchCategoryStats,
+      currentTaskId,
+      createConfusionMatrixChart,
+    ]
+  )
+
+  // 清理函数
+  useEffect(() => {
+    return () => {
+      // 清理所有定时器
+      if (keywordIntervalRef.current) {
+        clearInterval(keywordIntervalRef.current)
+      }
+      if (preprocessIntervalRef.current) {
+        clearInterval(preprocessIntervalRef.current)
+      }
+      if (classificationIntervalRef.current) {
+        clearInterval(classificationIntervalRef.current)
       }
     }
-
-    updateNextCategory()
-  }
-
-  // 处理卡片点击
-  const handleCardClick = (source: string) => {
-    // 重置所有状态
-    setCategoryStats({
-      robot: { count: 0, confidence: 0 },
-      agriculture: { count: 0, confidence: 0 },
-      landslide: { count: 0, confidence: 0 },
-      vision: { count: 0, confidence: 0 },
-      microscope: { count: 0, confidence: 0 },
-      satellite: { count: 0, confidence: 0 },
-      star: { count: 0, confidence: 0 },
-    })
-    setActiveSource(source)
-    setPreprocessProgress(0)
-    setPreprocessSteps([])
-    setMetrics({
-      accuracy: 0,
-      precision: 0,
-      recall: 0,
-    })
-
-    // 开始关键词提取
-    setTimeout(initKeywordExtraction, 500)
-  }
+  }, [])
 
   // 数据源图标映射
   const getSourceIcon = (source: string) => {
