@@ -484,7 +484,7 @@ const DataCollectionModal: React.FC<DataCollectionModalProps> = ({
         pageSize: 50,
       })
 
-      console.log("获取结果成功:", response?.data?.results?.length || 0)
+      console.log("获取结果成功:", response?.data?.results || 0)
       if (response && response.data && response.data.results) {
         const res = response.data.results.find(
           (item) => item.title === selectedSource

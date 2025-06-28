@@ -23,7 +23,6 @@ export default defineConfig({
       "/api": {
         target: "http://127.0.0.1:8001",
         changeOrigin: true,
-        // 移除这个 rewrite，因为我们的后端路由已经包含 /api 前缀
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

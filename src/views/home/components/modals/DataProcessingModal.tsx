@@ -72,8 +72,8 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
           sortBy: "timestamp",
           sortOrder: "desc",
         })
-        const papers = response.data
-        setValidPapers(papers.data)
+        const { papers = [], total } = response.data
+        setValidPapers(papers)
       } catch (error) {
         console.error("获取有效论文列表失败:", error)
         message.error("获取有效论文列表失败")
@@ -328,7 +328,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
     const results: DataItem[] = []
 
     if (currentFilter === "all" || currentFilter === "valid") {
-      results.push(...validPapers)
+      validPapers && results.push(...validPapers)
     }
     if (currentFilter === "all" || currentFilter === "formula") {
       results.push(...formulaImages)
@@ -461,12 +461,12 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
                       color: themeColor,
                     }}
                   >
-                    {validPapers.length} 篇
+                    {validPapers?.length} 篇
                   </span>
                 </div>
               </div>
 
-              {validPapers.length > 0 ? (
+              {validPapers?.length > 0 ? (
                 <div className="space-y-3">
                   {validPapers.map((paper, index) => (
                     <div
@@ -497,7 +497,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
                               字数统计
                             </span>
                             <div className="text-sm">
-                              {paper.wordCount.toLocaleString()} 字
+                              {paper?.wordCount?.toLocaleString()} 字
                             </div>
                           </div>
                           <div>
@@ -511,7 +511,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
                               公式数量
                             </span>
                             <div className="text-sm">
-                              {paper.formulaCount} 个
+                              {paper?.formulaCount} 个
                             </div>
                           </div>
                         </div>
@@ -519,7 +519,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
                           {paper.abstract}
                         </p>
                         <div className="flex flex-wrap gap-1">
-                          {paper.topics.map((topic, tIndex) => (
+                          {paper?.topics?.map((topic, tIndex) => (
                             <span
                               key={tIndex}
                               className="px-2 py-0.5 text-xs rounded"
