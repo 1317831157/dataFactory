@@ -362,4 +362,73 @@ declare namespace API {
       includeRawData: boolean
     }
   }
+
+  // 数据展示相关类型定义
+  namespace DataDisplay {
+    // 数据源选项
+    interface DataSourceOption {
+      label: string
+      value: string
+    }
+
+    // 指标数据
+    interface MetricData {
+      title: string
+      value: string
+      trend: string
+    }
+
+    // 最新数据项
+    interface LatestDataItem {
+      title: string
+      type: string
+      dataSize: number
+      updateDate: string
+    }
+
+    // 图表数据
+    interface ChartData {
+      categories: string[]
+      values: number[]
+    }
+
+    // 数据源统计
+    interface DataSourceStats {
+      totalDocuments: number
+      imageDatasets: number
+      coverageRate: string
+      sourceTypes: number
+    }
+
+    // 数据更新参数
+    interface DataUpdateParams {
+      dataSource: string
+      selectedSubTypes: string[]
+      dateRange: [Date, Date]
+      selectedFields: string[]
+    }
+
+    // 数据导出参数
+    interface DataExportParams {
+      format: string
+      dataSource?: string
+      dateRange?: [Date, Date]
+      fields?: string[]
+    }
+
+    // 数据源配置响应
+    interface DataSourceConfigResponse {
+      dataSourceOptions: DataSourceOption[]
+      fieldOptions: string[]
+      subTypeOptions: Record<string, string[]>
+      exportOptions: string[]
+    }
+
+    // 数据统计响应
+    interface DataStatsResponse {
+      metricData: MetricData[]
+      chartData: ChartData
+      latestData: LatestDataItem[]
+    }
+  }
 }

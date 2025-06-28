@@ -13,36 +13,12 @@ export {
 } from "./dataCollectModal"
 export { dataProcessingModalApi } from "./dataProcessingModal"
 export { dataAnalysisModalApi } from "./dataAnalysisModal"
+export { dataDisplayModalApi } from "./dataDisplayModal"
 
 export const analysisApi = {
   // 获取分析数据，添加重试逻辑
   getFileData: async (params?: any) => {
-    const maxRetries = 3
-    let retries = 0
     return request.get<any>("/api/output", params)
-    // while (retries < maxRetries) {
-    //   try {
-    //     return await request.get<any>("/api/output", params)
-    //   } catch (error: any) {
-    //     retries++
-
-    //     // 如果是超时错误且未达到最大重试次数，则等待后重试
-    //     if (
-    //       error.message &&
-    //       error.message.includes("timeout") &&
-    //       retries < maxRetries
-    //     ) {
-    //       console.log(
-    //         `Request timed out, retrying (${retries}/${maxRetries})...`
-    //       )
-    //       // 等待一段时间后重试
-    //       await new Promise((resolve) => setTimeout(resolve, 2000))
-    //     } else {
-    //       // 其他错误或已达到最大重试次数，则抛出错误
-    //       throw error
-    //     }
-    //   }
-    // }
   },
   // 获取自动分析结果
   getAutoAnalysisResult: async () => {

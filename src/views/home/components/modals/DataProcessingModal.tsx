@@ -93,8 +93,8 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
           pageSize,
           type: "formula",
         })
-        const formulas = response.data
-        setFormulaImages(formulas.data)
+        const formulas = response?.data
+        setFormulaImages(formulas?.data ?? [])
       } catch (error) {
         console.error("获取公式图片列表失败:", error)
         message.error("获取公式图片列表失败")
@@ -115,12 +115,12 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
           type: "trash",
         })
         const trashData = response.data
-        setTrashData(trashData.data)
-        setTrashPagination({
-          page: trashData.page,
-          pageSize: trashData.pageSize,
-          total: trashData.total,
-        })
+        setTrashData(trashData?.data ?? [])
+        // setTrashPagination({
+        //   page: trashData.page,
+        //   pageSize: trashData.pageSize,
+        //   total: trashData.total,
+        // })
       } catch (error) {
         console.error("获取垃圾数据列表失败:", error)
         message.error("获取垃圾数据列表失败")
@@ -246,7 +246,7 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
         const response = await dataProcessingModalApi.clearTrash()
         if (response.data.success) {
           setTrashData([])
-          setTrashPagination((prev) => ({ ...prev, total: 0 }))
+          // setTrashPagination((prev) => ({ ...prev, total: 0 }))
           message.success("垃圾箱已清空")
         } else {
           message.error(response.data.message || "清空垃圾箱失败")
@@ -263,8 +263,21 @@ const DataProcessingModal: React.FC<DataProcessingModalProps> = ({
   // 下载论文
   const handleDownloadPaper = useCallback(async (paperId: string) => {
     try {
-      await dataProcessingModalApi.downloadPaper(paperId, "pdf")
-      message.success("论文下载成功")
+      // 创建下载链接并触发下载
+      const downloadUrl = `/api/processing/papers/${paperId}/download?format=pdf`
+
+      // 创建一个临时的 a 标签来触发下载
+      const link = document.createElement("a")
+      link.href = downloadUrl
+      link.download = `paper_${paperId}.pdf`
+      link.style.display = "none"
+
+      // 添加到 DOM，点击，然后移除
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      message.success("论文下载已开始")
     } catch (error) {
       console.error("论文下载失败:", error)
       message.error("论文下载失败")

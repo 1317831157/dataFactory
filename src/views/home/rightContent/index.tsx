@@ -222,24 +222,29 @@ const RightContent: React.FC = () => {
             ? visitData
             : [
                 {
-                  value: 1048,
-                  name: "搜索引擎",
+                  value: 0,
+                  name: "学术论文",
                   itemStyle: { color: createGradient("#36a4ff", "#1a82ff") },
                 },
                 {
-                  value: 735,
-                  name: "直接访问",
+                  value: 0,
+                  name: "调查报告",
                   itemStyle: { color: createGradient("#ff9f43", "#ff7e00") },
                 },
                 {
-                  value: 580,
-                  name: "邮件营销",
+                  value: 0,
+                  name: "专业书籍",
                   itemStyle: { color: createGradient("#0084ff", "#0055ff") },
                 },
                 {
-                  value: 484,
-                  name: "联盟广告",
+                  value: 0,
+                  name: "政策文件",
                   itemStyle: { color: createGradient("#007aff", "#0055ff") },
+                },
+                {
+                  value: 0,
+                  name: "法规标准",
+                  itemStyle: { color: createGradient("#13c2c2", "#0055ff") },
                 },
               ],
       },
@@ -257,18 +262,13 @@ const RightContent: React.FC = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="relative w-full h-full">
             <div className="absolute inset-0 flex items-center justify-center">
-              <EChart
-                option={pieOption}
-                height="100%"
-                width="100%"
-                loading={loading}
-              />
+              <EChart option={pieOption} height="100%" width="100%" />
             </div>
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <div className="absolute right-22 inset-0 flex flex-col items-center justify-center text-center">
               <div className="text-5xl font-bold text-[#1890ff]">
                 {visitCount.toLocaleString()}
               </div>
-              <div className="text-sm text-gray-300 mt-2">过去24h访问次数</div>
+              <div className="text-sm text-gray-300 mt-2">总量</div>
             </div>
           </div>
         </div>
@@ -280,12 +280,7 @@ const RightContent: React.FC = () => {
           <h3 className="text-lg font-medium text-white">每小时提取数据量</h3>
         </div>
         <div className="h-[calc(100%-36px)]">
-          <EChart
-            option={lineOption}
-            height="100%"
-            width="100%"
-            loading={loading}
-          />
+          <EChart option={lineOption} height="100%" width="100%" />
         </div>
       </div>
 

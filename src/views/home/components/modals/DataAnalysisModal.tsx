@@ -241,7 +241,8 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
       const taskId = response.data.taskId
       setCurrentTaskId(taskId)
 
-      return await pollClassificationProgress(taskId)
+      const result = await pollClassificationProgress(taskId)
+      return { taskId, metrics: result }
     } catch (error) {
       console.error("启动智能分类失败:", error)
       message.error("启动智能分类失败")
@@ -283,7 +284,7 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
           clearInterval(pollInterval)
           reject(error)
         }
-      }, 100) // 每100ms检查一次进度，实现平滑的指标更新
+      }, 300) // 每100ms检查一次进度，实现平滑的指标更新
 
       classificationIntervalRef.current = pollInterval
     })
@@ -481,16 +482,33 @@ const DataAnalysisModal: React.FC<DataAnalysisModalProps> = () => {
         const classificationResult = await startClassification(source)
         console.log("智能分类完成:", classificationResult)
 
-        // 4. 获取最终结果
-        if (currentTaskId) {
-          const [confusionMatrix] = await Promise.all([
-            fetchConfusionMatrixData(currentTaskId),
-            fetchCategoryStats(currentTaskId),
-          ])
+        // 4. 获取最终结果 - 使用分类任务的 taskId
+        const classificationTaskId =
+          classificationResult.taskId || currentTaskId
+        if (classificationTaskId) {
+          console.log("使用分类任务ID获取结果:", classificationTaskId)
 
-          // 5. 创建混淆矩阵图表
-          if (confusionMatrixRef.current && confusionMatrix) {
-            createConfusionMatrixChart(confusionMatrix)
+          try {
+            const [confusionMatrix] = await Promise.all([
+              fetchConfusionMatrixData(classificationTaskId),
+              fetchCategoryStats(classificationTaskId),
+            ])
+
+            // 5. 创建混淆矩阵图表
+            if (confusionMatrixRef.current && confusionMatrix) {
+              createConfusionMatrixChart(confusionMatrix)
+            }
+          } catch (error) {
+            console.error("获取分类结果失败:", error)
+            // 如果获取失败，尝试等待一下再重试
+            setTimeout(async () => {
+              try {
+                await fetchCategoryStats(classificationTaskId)
+                console.log("延迟获取分类统计成功")
+              } catch (retryError) {
+                console.error("延迟获取分类统计也失败:", retryError)
+              }
+            }, 1000)
           }
         }
 

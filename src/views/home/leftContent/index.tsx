@@ -10,35 +10,35 @@ const resourceData = [
   {
     id: 1,
     name: "学术论文",
-    count: 175,
+    count: 0,
     icon: "📄",
     color: "#1890ff",
   },
   {
     id: 2,
     name: "调查报告",
-    count: 350,
+    count: 0,
     icon: "📊",
     color: "#52c41a",
   },
   {
     id: 3,
     name: "专业书籍",
-    count: 245,
+    count: 0,
     icon: "📚",
     color: "#722ed1",
   },
   {
     id: 4,
     name: "政策文件",
-    count: 32,
+    count: 0,
     icon: "📜",
     color: "#faad14",
   },
   {
     id: 5,
     name: "法规标准",
-    count: 46,
+    count: 0,
     icon: "⚖️",
     color: "#13c2c2",
   },
@@ -70,20 +70,18 @@ const LeftContent: React.FC = () => {
   // 获取资源数据
   const getResourceData = async () => {
     try {
-      console.log("getResourceData")
-
       const result = await analysisApi.getFileData()
-      console.log("result:", result)
+      // console.log("result:", result)
 
-      if (result.code === 200) {
+      if (result.code === 200 && result.data) {
         // 分析完成，更新数据
-        setResourceList(result.data)
+        setResourceList(result.data ?? resourceData)
         setAnalyzing(false)
         if (pollInterval) {
           clearInterval(pollInterval)
           setPollInterval(null)
         }
-      } else if (result.code === 202) {
+      } else {
         // 分析已启动，开始轮询
         console.log("Analysis started, polling for results...")
         setAnalyzing(true)
@@ -129,8 +127,6 @@ const LeftContent: React.FC = () => {
 
   // 组件挂载时获取数据
   useEffect(() => {
-    console.log("LeftContent")
-
     getResourceData()
     // 清理函数
     return () => {
@@ -155,7 +151,7 @@ const LeftContent: React.FC = () => {
           fileList: fileList, // 传递文件列表
         },
       })
-      console.log("result:", result)
+      // console.log("result:", result)
 
       if (result.data.task_id) {
         // 保存任务ID
